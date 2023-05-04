@@ -4,9 +4,8 @@ void BreakOut::Init(GameController &controller)
 {
     mScreenWidth = App::Singleton().Width();
     mScreenHeight = App::Singleton().Height();
-    mPaddle.SetScreenWidth(mScreenWidth);
-    mPaddle.SetScreenHeight(mScreenHeight);
     ResetGame();
+    mBall.SetRadius(3.0f);
     controller.ClearAll();
     ButtonAction LeftKeyAction;
     LeftKeyAction.Key = GameController::Left();
@@ -41,12 +40,26 @@ void BreakOut::Init(GameController &controller)
 
 void BreakOut::Update(uint32_t dt)
 {
-    mPaddle.Update(dt);
+    mBall.Update(dt);
+    mPaddle.Update(dt, mBall);
+
+    bool didBounce = mPaddle.Bounce(mBall);
+    if (!didBounce)
+    {
+        BoundaryEdge edge;
+        if (mLevelBoundary.HasCollided(mBall, edge))
+        {
+            mBall.Bounce(edge);
+        }
+    }
 }
 
 void BreakOut::Draw(Screen &screen)
 {
     mPaddle.Draw(screen);
+    mBall.Draw(screen);
+    AARectangle boundary = mLevelBoundary.GetRectangle();
+    screen.Draw(boundary, Color::White());
 }
 
 std::string BreakOut::GetName()
@@ -57,6 +70,10 @@ std::string BreakOut::GetName()
 
 void BreakOut::ResetGame()
 {
+    mLevelBoundary = {AARectangle(Vec2D::Zero, mScreenWidth, mScreenHeight)};
     AARectangle rect(Vec2D(mScreenWidth / 2 - Paddle::PADDLE_WIDTH / 2, mScreenHeight - 4 * Paddle::PADDLE_HEIGHT), Paddle::PADDLE_WIDTH, Paddle::PADDLE_HEIGHT);
-    mPaddle.Init(rect);
+
+    mPaddle.Init(rect, mScreenWidth, mScreenHeight);
+    mBall.MoveTo(Vec2D(mScreenWidth / 2, mScreenHeight / 2));
+    mBall.SetVelocity(Vec2D(100, -100));
 }

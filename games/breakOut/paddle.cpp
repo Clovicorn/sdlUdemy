@@ -1,12 +1,19 @@
 #include "paddle.hpp"
 
-void Paddle::Init(AARectangle &rect)
+void Paddle::Init(AARectangle &rect, int screenWidth, int screenHeight)
 {
+    mScreenWidth = screenWidth;
+    mScreenHeight = screenHeight;
     Excluder::Init(rect);
 }
 
-void Paddle::Update(uint32_t dt)
+void Paddle::Update(uint32_t dt, Ball &ball)
 {
+    // if (GetAARectangle().ContainsPoint(ball.GetPosition()))
+    // {
+    //     Vec2D pointOnEdge;
+    //     ball.MakeFlushWithEdge(GetEdge(BOTTOM_EDGE), pointOnEdge, true);
+    // }
 
     if (mDirection != 0)
     {
@@ -45,4 +52,33 @@ void Paddle::Draw(Screen &screen)
 {
     AARectangle rect = GetAARectangle();
     screen.Draw(rect, Color::Blue(), true, Color::Blue());
+}
+
+bool Paddle::Bounce(Ball &ball)
+{
+
+    BoundaryEdge edge;
+    if (HasCollided(ball.GetBoundingRect(), edge))
+    {
+        Vec2D pointOnEdge;
+        ball.MakeFlushWithEdge(edge, pointOnEdge, true);
+        if (edge.edge == GetEdge(TOP_EDGE).edge)
+        {
+            float edgeLength = edge.edge.Length();
+            if (IsEqual(edgeLength, 0))
+            {
+                return true;
+            }
+            float tx = (pointOnEdge.GetX() - edge.edge.GetP0().GetX()) / edgeLength;
+            std::cout << "tx: " << tx << std::endl;
+            if ((tx <= CORNER_EDGE_AMOUNT && ball.GetVelocity().GetX() > 0) || (tx >= (1.0f - CORNER_EDGE_AMOUNT) && ball.GetVelocity().GetX() < 0))
+            {
+                ball.SetVelocity(-ball.GetVelocity());
+                return true;
+            }
+        }
+        ball.SetVelocity(ball.GetVelocity().Reflect(edge.normal));
+        return true;
+    }
+    return false;
 }

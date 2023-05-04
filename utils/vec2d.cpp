@@ -18,7 +18,7 @@ ostream &operator<<(ostream &consoleOut, Vec2D &vec)
 
 bool Vec2D::operator==(const Vec2D &vec2) const
 {
-    return IsEqual(mX, vec2.mY) && IsEqual(mY, vec2.mY);
+    return IsEqual(mX, vec2.mX) && IsEqual(mY, vec2.mY);
 }
 
 bool Vec2D::operator!=(const Vec2D &vec2) const

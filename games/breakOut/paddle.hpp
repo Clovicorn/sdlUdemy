@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "excluder.hpp"
 #include "boundaryEdge.hpp"
+#include "ball.hpp"
 #include "../../graphics/screen.hpp"
 #include "../../utils/utils.hpp"
 
@@ -18,9 +19,10 @@ public:
     static const int PADDLE_WIDTH = 50;
     static const int PADDLE_HEIGHT = 10;
 
-    void Init(AARectangle &rect);
-    void Update(uint32_t dt);
+    void Init(AARectangle &rect, int screenWidth, int screenHeight);
+    void Update(uint32_t dt, Ball &ball);
     void Draw(Screen &screen);
+    bool Bounce(Ball &ball);
 
     inline void SetMovementDirection(PaddleDirection dir) { mDirection |= dir; }
     inline void UnsetMovementDirection(PaddleDirection dir) { mDirection &= ~dir; }
@@ -35,4 +37,5 @@ private:
     int mScreenHeight = 0;
     uint32_t mDirection = 0;
     const float VELOCITY = 100.0f;
+    const float CORNER_EDGE_AMOUNT = 0.03f;
 };

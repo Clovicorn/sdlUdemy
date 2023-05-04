@@ -11,8 +11,10 @@ main.cpp
 
 app/app.cpp
 
+games/breakOut/ball.cpp
 games/breakOut/breakOut.cpp
 games/breakOut/excluder.cpp
+games/breakOut/levelBoundary.cpp
 games/breakOut/paddle.cpp
 
 graphics/color.cpp

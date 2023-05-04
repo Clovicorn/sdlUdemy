@@ -4,6 +4,9 @@
 #include "../../app/app.hpp"
 #include "../game.hpp"
 #include "../../input/gameController.hpp"
+
+#include "ball.hpp"
+#include "levelBoundary.hpp"
 #include "paddle.hpp"
 
 class BreakOut : public Game
@@ -16,7 +19,10 @@ public:
 
 private:
     void ResetGame();
+
+    Ball mBall;
+    LevelBoundary mLevelBoundary;
+    Paddle mPaddle;
     int mScreenWidth = 0;
     int mScreenHeight = 0;
-    Paddle mPaddle;
 };

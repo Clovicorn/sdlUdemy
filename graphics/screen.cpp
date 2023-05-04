@@ -94,6 +94,8 @@ void Screen::Draw(const Line2D &line, const Color &color)
         dx = abs(dx) * 2;
         dy = abs(dy) * 2;
 
+        Draw(x0, y0, color);
+
         if (dx >= dy)
         {
             int d = dy - dx / 2;
@@ -155,26 +157,40 @@ void Screen::Draw(Circle &circle, const Color &color, bool fill, const Color &fi
 {
     std::vector<Vec2D> points;
     std::vector<Line2D> lines;
-    static unsigned int NUM_CIRCLE_SEGS = 30;
+    unsigned int NUM_CIRCLE_SEGS = 30;
+    if (circle.GetRadius() < 10)
+    {
+        NUM_CIRCLE_SEGS = 16;
+    }
+    else if (circle.GetRadius() < 5)
+    {
+        NUM_CIRCLE_SEGS = 8;
+    }
     float angle = TWO_PI / float(NUM_CIRCLE_SEGS);
 
     Vec2D p0 = Vec2D(circle.GetCenterPoint().GetX() + circle.GetRadius(), circle.GetCenterPoint().GetY());
+    p0.Rotate(angle, circle.GetCenterPoint());
     Vec2D p1 = p0;
+    Line2D nextLine;
+    // points.push_back(p0);
     for (unsigned int i = 0; i < NUM_CIRCLE_SEGS; ++i)
     {
         p1.Rotate(angle, circle.GetCenterPoint());
-        lines.push_back(Line2D(p1, p0));
+        nextLine.SetP0(p0);
+        nextLine.SetP1(p1);
+        lines.push_back(nextLine);
         p0 = p1;
         points.push_back(p0);
+    }
+
+    for (const Line2D &line : lines)
+    {
+        Draw(line, color);
     }
 
     if (fill)
     {
         FillPoly(points, fillColor);
-    }
-    for (const Line2D line : lines)
-    {
-        Draw(line, color);
     }
 }
 
@@ -225,7 +241,7 @@ void Screen::FillPoly(const std::vector<Vec2D> &points, const Color &color)
                     {
                         continue;
                     }
-                    float x = points[i].GetX() + (pixelY - pointiY) / denom * (points[j].GetX() - points[i].GetX());
+                    float x = points[i].GetX() + (pixelY - pointiY) / (denom) * (points[j].GetX() - points[i].GetX());
                     nodeXVec.push_back(x);
                 }
                 j = i;
@@ -235,7 +251,7 @@ void Screen::FillPoly(const std::vector<Vec2D> &points, const Color &color)
 
             for (size_t k = 0; k < nodeXVec.size(); k += 2)
             {
-                if (k > right)
+                if (nodeXVec[k] > right)
                 {
                     break;
                 }
@@ -249,9 +265,9 @@ void Screen::FillPoly(const std::vector<Vec2D> &points, const Color &color)
                     {
                         nodeXVec[k + 1] = right;
                     }
-                    for (int pixelX = nodeXVec[k]; pixelX < nodeXVec[k + 1]; pixelX++)
+                    for (int pixelX = nodeXVec[k]; pixelX < nodeXVec[k + 1]; ++pixelX)
                     {
-                        Draw(Vec2D(pixelX, pixelY), color);
+                        Draw(pixelX, pixelY, color);
                     }
                 }
             }
