@@ -7,6 +7,7 @@
 
 #include "ball.hpp"
 #include "levelBoundary.hpp"
+#include "breakOutLevel.hpp"
 #include "paddle.hpp"
 
 class BreakOut : public Game
@@ -21,6 +22,7 @@ private:
     void ResetGame();
 
     Ball mBall;
+    BreakOutLevel mLevel;
     LevelBoundary mLevelBoundary;
     Paddle mPaddle;
     int mScreenWidth = 0;

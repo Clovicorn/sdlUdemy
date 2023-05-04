@@ -43,20 +43,23 @@ void BreakOut::Update(uint32_t dt)
     mBall.Update(dt);
     mPaddle.Update(dt, mBall);
 
-    bool didBounce = mPaddle.Bounce(mBall);
-    if (!didBounce)
+        if (mPaddle.Bounce(mBall))
     {
-        BoundaryEdge edge;
-        if (mLevelBoundary.HasCollided(mBall, edge))
-        {
-            mBall.Bounce(edge);
-        }
+        return;
     }
+    BoundaryEdge edge;
+    if (mLevelBoundary.HasCollided(mBall, edge))
+    {
+        mBall.Bounce(edge);
+        return;
+    }
+    mLevel.Update(dt, mBall);
 }
 
 void BreakOut::Draw(Screen &screen)
 {
     mPaddle.Draw(screen);
+    mLevel.Draw(screen);
     mBall.Draw(screen);
     AARectangle boundary = mLevelBoundary.GetRectangle();
     screen.Draw(boundary, Color::White());
@@ -72,7 +75,7 @@ void BreakOut::ResetGame()
 {
     mLevelBoundary = {AARectangle(Vec2D::Zero, mScreenWidth, mScreenHeight)};
     AARectangle rect(Vec2D(mScreenWidth / 2 - Paddle::PADDLE_WIDTH / 2, mScreenHeight - 4 * Paddle::PADDLE_HEIGHT), Paddle::PADDLE_WIDTH, Paddle::PADDLE_HEIGHT);
-
+    mLevel.Init(mLevelBoundary.GetRectangle());
     mPaddle.Init(rect, mScreenWidth, mScreenHeight);
     mBall.MoveTo(Vec2D(mScreenWidth / 2, mScreenHeight / 2));
     mBall.SetVelocity(Vec2D(100, -100));
