@@ -33,6 +33,7 @@ public:
 
     inline uint32_t Width() { return mScreen.Width(); }
     inline uint32_t Height() { return mScreen.Height(); }
+    static const std::string &GetBasePath();
 
 private:
     float mFPS = 30.0f;

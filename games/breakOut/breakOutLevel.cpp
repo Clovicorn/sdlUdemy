@@ -17,7 +17,7 @@ void BreakOutLevel::Draw(Screen &screen)
 
 void BreakOutLevel::Init(const AARectangle &boundary)
 {
-    CreateDefaultLevel(boundary);
+    // CreateDefaultLevel(boundary);
 }
 
 void BreakOutLevel::Load(const std::vector<Block> &blocks)
@@ -72,9 +72,8 @@ void BreakOutLevel::Update(uint32_t dt, Ball &ball)
 void BreakOutLevel::CreateDefaultLevel(const AARectangle &boundary)
 {
     mBlocks.clear();
-    const int BLOCK_WIDTH = 30;
-    const int BLOCK_HEIGHT = 15;
-    const int NUM_BLOCKS_ACROSS = (((int)boundary.GetWidth() - ((2 * BLOCK_WIDTH))) / BLOCK_WIDTH);
+
+    const int NUM_BLOCKS_ACROSS = (((int)boundary.GetWidth() - ((BLOCK_WIDTH))) / BLOCK_WIDTH);
     std::cout << NUM_BLOCKS_ACROSS << std::endl;
     const int NUM_BLOCK_ROWS = 6;
     float startX = ((int)boundary.GetWidth() - (NUM_BLOCKS_ACROSS * (BLOCK_WIDTH + 1))) / 2;
@@ -99,4 +98,120 @@ void BreakOutLevel::CreateDefaultLevel(const AARectangle &boundary)
             blockRect.MoveBy(Vec2D(BLOCK_WIDTH, 0));
         }
     }
+}
+
+// Static Methods
+std::vector<BreakOutLevel> BreakOutLevel::LoadLevelsFromFile(const std::string &filePath, int screenWidth, int screenHeight)
+{
+    std::vector<BreakOutLevel> levels;
+    std::vector<LayoutBlock> layoutBlocks;
+    std::vector<Block> levelBlocks;
+
+    int width = 0;
+    int height = 0;
+
+    FileCommandLoader loader;
+
+    Command levelCommand;
+    levelCommand.command = "level";
+    levelCommand.parseFunc = [&](ParseParams params)
+    {
+        if (levels.size() > 0)
+        {
+            levels.back().Load(levelBlocks);
+        }
+        layoutBlocks.clear();
+        levelBlocks.clear();
+        width = 0;
+        height = 0;
+
+        BreakOutLevel level;
+
+        level.Init(AARectangle(Vec2D::Zero, screenWidth, screenHeight));
+        levels.push_back(level);
+    };
+
+    loader.AddCommand(levelCommand);
+
+    Command blockCommand;
+    blockCommand.command = "block";
+    blockCommand.parseFunc = [&](ParseParams params)
+    {
+        LayoutBlock lb;
+        layoutBlocks.push_back(lb);
+    };
+
+    loader.AddCommand(blockCommand);
+
+    Command symbolCommand;
+    symbolCommand.command = "symbol";
+    symbolCommand.parseFunc = [&](ParseParams params)
+    {
+        layoutBlocks.back().symbol = FileCommandLoader::ReadChar(params);
+    };
+    loader.AddCommand(symbolCommand);
+
+    Command fillcolorCommand;
+    fillcolorCommand.command = "fillcolor";
+    fillcolorCommand.parseFunc = [&](ParseParams params)
+    {
+        layoutBlocks.back().color = FileCommandLoader::ReadColor(params);
+    };
+    loader.AddCommand(fillcolorCommand);
+
+    Command hpCommand;
+    hpCommand.command = "hp";
+    hpCommand.parseFunc = [&](ParseParams params)
+    {
+        layoutBlocks.back().hp = FileCommandLoader::ReadInt(params);
+    };
+
+    loader.AddCommand(hpCommand);
+
+    Command widthCommand;
+    widthCommand.command = "width";
+    widthCommand.parseFunc = [&](ParseParams params)
+    {
+        width = FileCommandLoader::ReadInt(params);
+    };
+    loader.AddCommand(widthCommand);
+
+    Command heightCommand;
+    heightCommand.command = "height";
+    heightCommand.parseFunc = [&](ParseParams params)
+    {
+        height = FileCommandLoader::ReadInt(params);
+    };
+    loader.AddCommand(heightCommand);
+
+    Command layoutCommand;
+    layoutCommand.commandType = COMMAND_MULTI_LINE;
+    layoutCommand.command = "layout";
+    layoutCommand.parseFunc = [&](ParseParams params)
+    {
+        float startX = (screenWidth - BLOCK_WIDTH * width) / 2.0f;
+        AARectangle blockRect(Vec2D(startX, (params.lineNum + 1) * BLOCK_HEIGHT), BLOCK_WIDTH, BLOCK_HEIGHT);
+
+        for (int c = 0; c < params.line.length(); c++)
+        {
+            if (params.line[c] != '-')
+            {
+                LayoutBlock thisBlockLayout = FindLayoutBlockForSymbol(layoutBlocks, params.line[c]);
+                Block b;
+                b.Init(blockRect, thisBlockLayout.hp, Color::Black(), thisBlockLayout.color);
+                levelBlocks.push_back(b);
+            }
+            blockRect.MoveBy(Vec2D(BLOCK_WIDTH, 0));
+        }
+    };
+    loader.AddCommand(layoutCommand);
+
+    loader.LoadFile(filePath);
+
+    if (levels.size() > 0)
+    {
+        levels.back().Load(levelBlocks);
+    }
+
+    return levels;
 }

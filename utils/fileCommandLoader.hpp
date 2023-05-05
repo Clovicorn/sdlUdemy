@@ -31,7 +31,7 @@ class FileCommandLoader
 {
 public:
     void AddCommand(const Command &command);
-    bool LoadFile(std::string &filePath);
+    bool LoadFile(const std::string &filePath);
 
     static Color ReadColor(const ParseParams &params);
     static Vec2D ReadSize(const ParseParams &params);

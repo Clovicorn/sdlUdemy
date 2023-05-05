@@ -1,14 +1,15 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 #include "../../app/app.hpp"
 #include "../game.hpp"
 #include "../../input/gameController.hpp"
 
 #include "ball.hpp"
 #include "levelBoundary.hpp"
-#include "breakOutLevel.hpp"
 #include "paddle.hpp"
+#include "breakOutLevel.hpp"
 
 class BreakOut : public Game
 {
@@ -20,11 +21,12 @@ public:
 
 private:
     void ResetGame();
-
     Ball mBall;
-    BreakOutLevel mLevel;
     LevelBoundary mLevelBoundary;
     Paddle mPaddle;
     int mScreenWidth = 0;
     int mScreenHeight = 0;
+    size_t mCurrentLevel = 0;
+    std::vector<BreakOutLevel> mLevels;
+    BreakOutLevel &GetCurrentLevel() { return mLevels[mCurrentLevel]; }
 };

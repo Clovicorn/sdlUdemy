@@ -43,7 +43,7 @@ void BreakOut::Update(uint32_t dt)
     mBall.Update(dt);
     mPaddle.Update(dt, mBall);
 
-        if (mPaddle.Bounce(mBall))
+    if (mPaddle.Bounce(mBall))
     {
         return;
     }
@@ -53,13 +53,13 @@ void BreakOut::Update(uint32_t dt)
         mBall.Bounce(edge);
         return;
     }
-    mLevel.Update(dt, mBall);
+    GetCurrentLevel().Update(dt, mBall);
 }
 
 void BreakOut::Draw(Screen &screen)
 {
     mPaddle.Draw(screen);
-    mLevel.Draw(screen);
+    GetCurrentLevel().Draw(screen);
     mBall.Draw(screen);
     AARectangle boundary = mLevelBoundary.GetRectangle();
     screen.Draw(boundary, Color::White());
@@ -73,10 +73,12 @@ std::string BreakOut::GetName()
 
 void BreakOut::ResetGame()
 {
+    mLevels = BreakOutLevel::LoadLevelsFromFile(App::GetBasePath() + "assets/BreakoutLevels.txt", mScreenWidth, mScreenHeight);
+    mCurrentLevel = 0;
     mLevelBoundary = {AARectangle(Vec2D::Zero, mScreenWidth, mScreenHeight)};
     AARectangle rect(Vec2D(mScreenWidth / 2 - Paddle::PADDLE_WIDTH / 2, mScreenHeight - 4 * Paddle::PADDLE_HEIGHT), Paddle::PADDLE_WIDTH, Paddle::PADDLE_HEIGHT);
-    mLevel.Init(mLevelBoundary.GetRectangle());
+    mLevels[mCurrentLevel].Init(mLevelBoundary.GetRectangle());
     mPaddle.Init(rect, mScreenWidth, mScreenHeight);
-    mBall.MoveTo(Vec2D(mScreenWidth / 2, mScreenHeight / 2));
+    mBall.MoveTo(Vec2D(mScreenWidth / 2, mScreenHeight - (mScreenHeight / 4)));
     mBall.SetVelocity(Vec2D(100, -100));
 }

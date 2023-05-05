@@ -5,7 +5,7 @@ void FileCommandLoader::AddCommand(const Command &command)
     mCommands.push_back(command);
 }
 
-bool FileCommandLoader::LoadFile(std::string &filePath)
+bool FileCommandLoader::LoadFile(const std::string &filePath)
 {
     std::ifstream inFile;
     std::string line = "";
