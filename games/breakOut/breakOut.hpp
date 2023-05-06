@@ -10,6 +10,15 @@
 #include "levelBoundary.hpp"
 #include "paddle.hpp"
 #include "breakOutLevel.hpp"
+#include "highScores.hpp"
+
+enum BreakOutGameStates
+{
+    IN_PLAY = 0,
+    IN_SERVE,
+    IN_GAME,
+    IN_GAME_OVER
+};
 
 class BreakOut : public Game
 {
@@ -21,12 +30,21 @@ public:
 
 private:
     void ResetGame();
+    void SetToServe();
+    void NextLevel();
+    void CreateControls(GameController &controller);
+    BreakOutLevel &GetCurrentLevel() { return mLevels[mCurrentLevel]; }
     Ball mBall;
+    HighScores mHighScores;
+    std::string mHighScoreFile = "assets/HighScores.txt";
+    const float INITIAL_BALL_SPEED = 100.0f;
     LevelBoundary mLevelBoundary;
     Paddle mPaddle;
+    int cleanup = 0;
     int mScreenWidth = 0;
     int mScreenHeight = 0;
     size_t mCurrentLevel = 0;
     std::vector<BreakOutLevel> mLevels;
-    BreakOutLevel &GetCurrentLevel() { return mLevels[mCurrentLevel]; }
+    BreakOutGameStates mGameState;
+    int mLives = 3;
 };

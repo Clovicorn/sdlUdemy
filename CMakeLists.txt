@@ -16,6 +16,7 @@ games/breakOut/block.cpp
 games/breakOut/breakOut.cpp
 games/breakOut/breakOutLevel.cpp
 games/breakOut/excluder.cpp
+games/breakOut/highScores.cpp
 games/breakOut/layoutBlock.cpp
 games/breakOut/levelBoundary.cpp
 games/breakOut/paddle.cpp
@@ -41,7 +42,10 @@ utils/vec2d.cpp
 utils/fileCommandLoader.cpp
 
 )
-
+add_custom_target(copy_assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/assets
+)
+add_dependencies(${PROJECT_NAME} copy_assets)
 target_link_libraries(${PROJECT_NAME} SDL2 )
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

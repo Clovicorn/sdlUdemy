@@ -1,0 +1,29 @@
+:name ABC
+:score 1000000000
+
+:name BCD
+:score 100000000
+
+:name CDE
+:score 10000000
+
+:name DEF
+:score 1000000
+
+:name EFG
+:score 100000
+
+:name FGH
+:score 10000
+
+:name GHI
+:score 1000
+
+:name HIJ
+:score 100
+
+:name IJK
+:score 10
+
+:name JKL
+:score 1

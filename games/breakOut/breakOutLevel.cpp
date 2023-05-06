@@ -99,7 +99,23 @@ void BreakOutLevel::CreateDefaultLevel(const AARectangle &boundary)
         }
     }
 }
-
+bool BreakOutLevel::IsLevelComplete()
+{
+    int blocksLeft = 0;
+    for (auto &block : mBlocks)
+    {
+        if (!block.IsDestroyed() && block.GetHP() != UNBREAKABLE)
+        {
+            blocksLeft++;
+        }
+    }
+    return blocksLeft == 0;
+    // this works -- SAVE FOR LATER
+    //  mBlocks.erase(std::remove_if(mBlocks.begin(), mBlocks.end(), [](const Block &block)
+    //                               { return block.IsDestroyed(); }),
+    //                mBlocks.end());
+    //  return mBlocks.size() == 0;
+}
 // Static Methods
 std::vector<BreakOutLevel> BreakOutLevel::LoadLevelsFromFile(const std::string &filePath, int screenWidth, int screenHeight)
 {

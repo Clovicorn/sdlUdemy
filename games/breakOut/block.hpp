@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "ball.hpp"
 #include "excluder.hpp"
 #include "../../graphics/color.hpp"

@@ -24,5 +24,9 @@ void Block::ReduceHP()
     if (mHP > 0)
     {
         --mHP;
+        if (mHP > 0)
+        {
+            mFill.SetAlpha(255 - (255 / mHP));
+        }
     }
 }
