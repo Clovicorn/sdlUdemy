@@ -21,6 +21,10 @@ games/breakOut/layoutBlock.cpp
 games/breakOut/levelBoundary.cpp
 games/breakOut/paddle.cpp
 
+games/tetris/tetris.cpp
+games/tetris/tetrisBlock.cpp
+games/tetris/tetrisShape.cpp
+
 graphics/color.cpp
 graphics/screenBuffer.cpp
 graphics/screen.cpp

@@ -9,7 +9,7 @@
 
 // #include "../utils/vec2d.hpp"
 
-#include "../games/breakOut/breakOut.hpp"
+#include "../games/tetris/tetris.hpp"
 // #include "../games/game.hpp"
 
 // #include "../graphics/color.hpp"
