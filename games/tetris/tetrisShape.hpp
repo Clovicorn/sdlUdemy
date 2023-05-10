@@ -13,7 +13,8 @@ enum ShapeType
     L_SHAPE,
     J_SHAPE,
     S_SHAPE,
-    Z_SHAPE
+    Z_SHAPE,
+    NUM_SHAPES
 };
 
 class TetrisShape
@@ -25,13 +26,14 @@ public:
     void MoveLeft();
     void MoveRight();
     void Rotate();
-
+    void MoveBy(Vec2D &distance);
     inline void SetCanMove(bool move) { mCanMove = move; }
     inline bool GetCanMove() { return mCanMove; }
     inline std::vector<TetrisBlock> &GetBlocks() { return mBlocks; }
+    int GetWidth();
+    int GetHeight();
 
 private:
-    // TODO
     void CreateLine(int startX, int startY);
     void CreateSquare(int startX, int startY);
     void CreateT(int startX, int startY);

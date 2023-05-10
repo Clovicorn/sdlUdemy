@@ -27,11 +27,21 @@ public:
     void Rotate(const Vec2D &aroundPoint);
     void Draw(Screen &screen);
     void Update(uint32_t dt);
-    bool CheckForCollision();
+    bool CheckForCollision(const AARectangle &rect, BlockSide side);
     void MoveBy(Vec2D &offset);
-    inline const AARectangle &GetAARectangle() { return mRect; }
+    inline AARectangle &GetAARectangle() { return mRect; }
+    inline bool GetCanMove() { return mCanMove; }
+    inline void SetCanMove(bool move) { mCanMove = move; }
+    inline bool GetShouldDraw() { return mShouldDraw; }
+    inline void SetShouldDraw(bool draw) { mShouldDraw = draw; }
+    inline const Color &GetOutlineColor() { return mOutline; }
+    inline const Color &GetFillColor() { return mFill; }
+    inline void SetOutlineColor(Color &color) { mOutline = color; }
+    inline void SetFillColor(Color &color) { mFill = color; }
 
 private:
+    bool mCanMove = false;
+    bool mShouldDraw = false;
     unsigned int mSize;
     AARectangle mRect;
     Color mOutline;

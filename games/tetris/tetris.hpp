@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <vector>
+#include <time.h>
+#include <stdlib.h>
 #include "../../app/app.hpp"
 #include "../game.hpp"
 #include "../../input/gameController.hpp"
@@ -38,16 +40,20 @@ public:
 private:
     void CreateControls(GameController &controller);
     void ResetCurrentShape();
-    void UpdateBoard();
+    void UpdateBoard(AARectangle &rect, int row, int column);
     bool CheckForCollision(BoardSides side);
+    void DeleteCompleteRows();
+    void UpdateScore(int amount);
+    int mScore = 0;
     int mSpeed = 60;
     int mAmountBetweenUpdate = 0;
-    unsigned int mBlockSize = 13;
+    unsigned int mBlockSize = 12;
     unsigned int mPlayingHeightSquares = 20;
     unsigned int mPlayingWidthSquares = 10;
     unsigned int mScreenWidth;
     unsigned int mScreenHeight;
     const int BORDER_WIDTH = 10;
+    std::vector<TetrisBlock> mBlocks;
     TetrisBlock mBoard[20][10];
     TetrisGameState mGameState = TETRIS_NOT_STARTED;
     TetrisShape mCurrentShape;

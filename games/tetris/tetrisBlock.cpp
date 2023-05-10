@@ -19,7 +19,7 @@ void TetrisBlock::Draw(Screen &screen)
 
 void TetrisBlock::Update(uint32_t dt)
 {
-    mRect.MoveBy(Vec2D(0, mSize));
+    mRect.MoveBy(Vec2D(0, mSize + 1));
 }
 
 void TetrisBlock::MoveBy(Vec2D &offset)
@@ -35,4 +35,48 @@ void TetrisBlock::Rotate(const Vec2D &aroundPoint)
     mRect.SetTopLeft(Vec2D(unitTopLeft.GetY(), -unitTopLeft.GetX()));
     mRect.SetTopLeft(Vec2D(mRect.GetTopLeft().GetX() + topLeft.GetX(), mRect.GetTopLeft().GetY() + topLeft.GetY()));
     mRect.SetBottomRight(Vec2D(mRect.GetTopLeft().GetX() + mSize - 1, mRect.GetTopLeft().GetY() + mSize - 1));
+}
+
+bool TetrisBlock::CheckForCollision(const AARectangle &rect, BlockSide side)
+{
+    switch (side)
+    {
+    case RIGHT_SIDE:
+    {
+        if (mRect.GetBottomRight().GetX() > rect.GetTopLeft().GetX())
+        {
+            int distance = mRect.GetCenterPoint().Distance(rect.GetCenterPoint());
+            if (distance < mSize)
+            {
+                return true;
+            }
+        }
+    }
+    break;
+
+    case BOTTOM_SIDE:
+    {
+        if ((mRect.GetBottomRight().GetY() + mSize) >= rect.GetTopLeft().GetY())
+        {
+            std::cout << "did collide" << std::endl;
+            return true;
+        }
+    }
+    break;
+
+    case LEFT_SIDE:
+    {
+        if (mRect.GetTopLeft().GetX() < rect.GetBottomRight().GetX())
+        {
+            int distance = mRect.GetCenterPoint().Distance(rect.GetCenterPoint());
+            if (distance < mSize)
+            {
+                return true;
+            }
+        }
+    }
+    break;
+    }
+
+    return false;
 }
