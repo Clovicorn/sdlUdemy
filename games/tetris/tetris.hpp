@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <time.h>
@@ -39,23 +40,32 @@ public:
 
 private:
     void CreateControls(GameController &controller);
+    void IsGameOver();
+    void StartGame();
     void ResetCurrentShape();
-    void UpdateBoard(AARectangle &rect, int row, int column);
+    void UpdateBoard(unsigned int dt);
     bool CheckForCollision(BoardSides side);
     void DeleteCompleteRows();
     void UpdateScore(int amount);
-    int mScore = 0;
-    int mSpeed = 60;
-    int mAmountBetweenUpdate = 0;
-    unsigned int mBlockSize = 12;
-    unsigned int mPlayingHeightSquares = 20;
-    unsigned int mPlayingWidthSquares = 10;
+
+    static const int STARTSPEED = 60;
+    static const unsigned int mPlayingHeightSquares = 20;
+    static const unsigned int mPlayingWidthSquares = 10;
+    const int BORDER_WIDTH = 10;
+
     unsigned int mScreenWidth;
     unsigned int mScreenHeight;
-    const int BORDER_WIDTH = 10;
+
+    int mScore = 0;
+    int mSpeed = 0;
+    int mAmountBetweenUpdate = 0;
+    unsigned int mBlockSize = 12;
     std::vector<TetrisBlock> mBlocks;
-    TetrisBlock mBoard[20][10];
+    int rows[20] = {0};
+    int columns[10] = {0};
     TetrisGameState mGameState = TETRIS_NOT_STARTED;
+    TetrisShape mNextShape;
     TetrisShape mCurrentShape;
     AARectangle mBorder;
+    AARectangle mNextShapeBorder;
 };

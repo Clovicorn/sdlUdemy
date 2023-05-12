@@ -1,5 +1,28 @@
 #include "tetris.hpp"
 
+void Tetris::Draw(Screen &screen)
+{
+    screen.Draw(mBorder, Color::White(), true, Color::Black());
+    screen.Draw(mNextShapeBorder, Color::White(), true, Color::Black());
+    if (mGameState == TETRIS_PLAYING)
+    {
+        for (auto &block : mCurrentShape.GetBlocks())
+        {
+            if (block.GetAARectangle().GetTopLeft().GetY() > mBorder.GetTopLeft().GetY())
+                block.Draw(screen);
+        }
+        mNextShape.Draw(screen);
+
+        for (auto &block : mBlocks)
+        {
+            if (block.GetShouldDraw())
+            {
+                block.Draw(screen);
+            }
+        }
+    }
+}
+
 void Tetris::Init(GameController &controller)
 {
     mScreenWidth = App::Singleton().Width();
@@ -11,11 +34,11 @@ void Tetris::Init(GameController &controller)
     int borderTopX = (mScreenWidth - BORDER_WIDTH) - (mBlockSize * mPlayingWidthSquares) - (mPlayingWidthSquares + 1);
 
     int borderTopY = (mScreenHeight - BORDER_WIDTH) - (mBlockSize * mPlayingHeightSquares) - (mPlayingHeightSquares + 1);
-
     unsigned int borderWidth = (mBlockSize * mPlayingWidthSquares) + (mPlayingWidthSquares) + 1;
     unsigned int borderHeight = (mBlockSize * mPlayingHeightSquares) + (mPlayingHeightSquares) + 1;
     mBorder = {Vec2D(borderTopX, borderTopY), borderWidth, borderHeight};
-
+    int nextBorderTopX = BORDER_WIDTH / 2;
+    mNextShapeBorder = {Vec2D(nextBorderTopX, borderTopY + (mBlockSize * 2)), (mBlockSize * 6), (mBlockSize * 4)};
     ResetCurrentShape();
 }
 
@@ -25,19 +48,10 @@ void Tetris::Update(uint32_t dt)
     {
         if (mAmountBetweenUpdate >= 60)
         {
-            bool hasCollided = false;
+
             mAmountBetweenUpdate = 0;
-            if (!CheckForCollision(BOTTOM_BORDER))
-            {
-                if (mCurrentShape.GetCanMove())
-                {
-                    mCurrentShape.Update(dt);
-                }
-            }
-            else
-            {
-                DeleteCompleteRows();
-            }
+            IsGameOver();
+            UpdateBoard(dt);
         }
         else
         {
@@ -46,22 +60,98 @@ void Tetris::Update(uint32_t dt)
     }
 }
 
-void Tetris::Draw(Screen &screen)
+void Tetris::UpdateBoard(unsigned int dt)
 {
-    screen.Draw(mBorder, Color::White(), true, Color::Black());
-    if (mGameState == TETRIS_PLAYING)
+    if (!CheckForCollision(BOTTOM_BORDER))
     {
-        for (auto &block : mCurrentShape.GetBlocks())
+        if (mCurrentShape.GetCanMove())
         {
-            if (block.GetAARectangle().GetTopLeft().GetY() > mBorder.GetTopLeft().GetY())
-                block.Draw(screen);
-        }
-
-        for (auto &block : mBlocks)
-        {
-            block.Draw(screen);
+            mCurrentShape.Update(dt);
         }
     }
+    else
+    {
+        DeleteCompleteRows();
+    }
+}
+
+void Tetris::DeleteCompleteRows()
+{
+    int rowsDelAmount = 0;
+    std::vector<int> rowsDeleted;
+    for (int i = 0; i < mPlayingHeightSquares; i++)
+    {
+
+        if (rows[i] == 10)
+        {
+            rowsDeleted.push_back(i);
+            int y = (i * (mBlockSize + 1)) + mBorder.GetTopLeft().GetY() + 1;
+
+            for (auto &block : mBlocks)
+            {
+                if (block.GetAARectangle().GetTopLeft().GetY() == y)
+                {
+                    block.SetShouldDraw(false);
+                }
+                else if (block.GetAARectangle().GetTopLeft().GetY() < y)
+                {
+                    Vec2D move(0, mBlockSize + 1);
+                    block.MoveBy(move);
+                }
+            }
+            rows[i] = 0;
+            rowsDelAmount++;
+        }
+    }
+    if (rowsDeleted.size() > 0)
+    {
+        for (int i = 0; i < rowsDeleted.size(); i++)
+        {
+            for (int x = rowsDeleted[i]; x >= 0; x--)
+            {
+                if (x >= 1)
+                {
+                    if (rows[x] == 0 && rows[x - 1] > 0)
+                    {
+                        rows[x] = rows[x - 1];
+                        rows[x - 1] = 0;
+
+                        x++;
+                    }
+                }
+            }
+        }
+    }
+
+    mBlocks.erase(std::remove_if(mBlocks.begin(), mBlocks.end(), [](TetrisBlock &block)
+                                 { if(!block.GetShouldDraw()){
+                                    return true;} return false; }),
+                  mBlocks.end());
+    if (rowsDelAmount > 0)
+    {
+        for (int i = 0; i < mPlayingWidthSquares; i++)
+        {
+            if (columns[i] > 0)
+            {
+                columns[i] -= rowsDelAmount;
+            }
+        }
+
+        UpdateScore(rowsDelAmount);
+    }
+}
+
+void Tetris::UpdateScore(int amount)
+{
+    if (amount == 4)
+    {
+        mScore += 1000;
+    }
+    else
+    {
+        mScore += (amount * 100);
+    }
+    std::cout << "Score is: " << mScore << std::endl;
 }
 
 std::string Tetris::GetName()
@@ -111,8 +201,8 @@ void Tetris::CreateControls(GameController &controller)
         {
             if (GameController::IsPressed(state))
             {
-                bool hasCollided = CheckForCollision(RIGHT_BORDER);
-                if (!hasCollided)
+
+                if (!CheckForCollision(RIGHT_BORDER))
                 {
                     mCurrentShape.MoveRight();
                 }
@@ -132,6 +222,10 @@ void Tetris::CreateControls(GameController &controller)
                     mCurrentShape.Update(0);
                     mAmountBetweenUpdate = 0;
                 }
+                else
+                {
+                    DeleteCompleteRows();
+                }
             }
         }
     };
@@ -144,8 +238,7 @@ void Tetris::CreateControls(GameController &controller)
         {
             if (GameController::IsPressed(state))
             {
-                bool hasCollided = CheckForCollision(LEFT_BORDER);
-                if (!hasCollided)
+                if (!CheckForCollision(LEFT_BORDER))
                 {
                     mCurrentShape.MoveLeft();
                 }
@@ -161,14 +254,7 @@ void Tetris::CreateControls(GameController &controller)
         {
             if (mGameState == TETRIS_NOT_STARTED)
             {
-                mGameState = TETRIS_PLAYING;
-            }
-            else if (mGameState == TETRIS_PLAYING)
-            {
-                if (mCurrentShape.GetBlocks()[3].GetAARectangle().GetCenterPoint().GetY() + mBlockSize > mBorder.GetTopLeft().GetY() + (mBlockSize * 3))
-                {
-                    mCurrentShape.Rotate();
-                }
+                StartGame();
             }
         }
     };
@@ -201,17 +287,15 @@ void Tetris::CreateControls(GameController &controller)
 
 void Tetris::ResetCurrentShape()
 {
+
+    int startX = mBorder.GetTopLeft().GetX() + ((mBlockSize + 1) * 4) + 1;
+    mCurrentShape.Init(mNextShape.GetShapeType(), mBlockSize, startX, mBorder.GetTopLeft().GetY() + 1);
+    mCurrentShape.SetCanMove(true);
     std::srand(int(time(0)));
     int randomNum = std::rand() % NUM_SHAPES;
-    mCurrentShape.Init((ShapeType)randomNum, mBlockSize, mBorder.GetTopLeft().GetX() + 1, mBorder.GetTopLeft().GetY() + 1);
-    mCurrentShape.SetCanMove(true);
+    mNextShape.Init((ShapeType)randomNum, mBlockSize, mNextShapeBorder.GetTopLeft().GetX() + mBlockSize, mNextShapeBorder.GetTopLeft().GetY() + mBlockSize);
 }
 
-void Tetris::UpdateBoard(AARectangle &rect, int row, int column)
-{
-}
-// TODO create collision detection for blocks on the left
-// and right of position
 bool Tetris::CheckForCollision(BoardSides side)
 {
     int sidePoint = 0;
@@ -227,6 +311,20 @@ bool Tetris::CheckForCollision(BoardSides side)
             }
             else
             {
+                if (mBlocks.size() > 0)
+                {
+                    for (auto &vectorBlock : mBlocks)
+                    {
+                        AARectangle rect = block.GetAARectangle();
+                        Vec2D move(mBlockSize, 0);
+                        move.SetX(-move.GetX() / 2);
+                        rect.MoveBy(move);
+                        if (rect.Intersects(vectorBlock.GetAARectangle()))
+                        {
+                            return true;
+                        }
+                    }
+                }
             }
         }
     }
@@ -241,58 +339,64 @@ bool Tetris::CheckForCollision(BoardSides side)
             }
             else
             {
+                if (mBlocks.size() > 0)
+                {
+                    for (auto &vectorBlock : mBlocks)
+                    {
+                        AARectangle rect = block.GetAARectangle();
+                        rect.MoveBy(Vec2D(mBlockSize / 2, 0));
+                        if (rect.Intersects(vectorBlock.GetAARectangle()))
+                        {
+                            return true;
+                        }
+                    }
+                }
             }
         }
     }
     else if (side == BOTTOM_BORDER)
     {
-        bool addTomBlocks = false;
+        sidePoint = mBorder.GetBottomRight().GetY();
+        bool hasCollided = false;
         for (auto &block : mCurrentShape.GetBlocks())
         {
-            std::vector<TetrisBlock> testBlocks;
-            int currentTopX = block.GetAARectangle().GetTopLeft().GetX();
-            for (auto &shouldAdd : mBlocks)
+
+            AARectangle rect = block.GetAARectangle();
+            rect.MoveBy(Vec2D(0, mBlockSize / 2));
+            if (mBlocks.size() > 0)
             {
-                if (shouldAdd.GetAARectangle().GetTopLeft().GetX() == currentTopX)
+                for (auto &vectorBlock : mBlocks)
                 {
-                    testBlocks.push_back(shouldAdd);
-                }
-            }
-            if (testBlocks.size() > 0)
-            {
-                for (auto &testBlock : testBlocks)
-                {
-                    if (block.CheckForCollision(testBlock.GetAARectangle(), BOTTOM_SIDE))
+
+                    if (rect.Intersects(vectorBlock.GetAARectangle()))
                     {
-                        addTomBlocks = true;
+
+                        hasCollided = true;
                     }
                 }
             }
-            if (addTomBlocks)
+            if (rect.GetBottomRight().GetY() >= sidePoint && !hasCollided)
             {
-                break;
-            }
-            // Did we hit bottom border
-            sidePoint = mBorder.GetBottomRight().GetY();
-            if (block.GetAARectangle().GetTopLeft().GetY() + mBlockSize >= sidePoint)
-            {
-                addTomBlocks = true;
-            }
-            if (addTomBlocks)
-            {
-                break;
+                hasCollided = true;
             }
         }
-        if (addTomBlocks)
+        if (hasCollided)
         {
-            mCurrentShape.SetCanMove(false);
-            std::cout << "adding to mBlocks" << std::endl;
             for (auto &block : mCurrentShape.GetBlocks())
             {
-                TetrisBlock newBlock(block.GetAARectangle(), block.GetOutlineColor(), Color::White());
+                TetrisBlock blockToAdd(block.GetAARectangle(), block.GetOutlineColor(), Color::White());
 
-                newBlock.SetCanMove(false);
-                mBlocks.push_back(newBlock);
+                mBlocks.push_back(blockToAdd);
+                mBlocks.back().SetShouldDraw(true);
+
+                float x = (blockToAdd.GetAARectangle().GetTopLeft().GetX() - mBorder.GetTopLeft().GetX()) / (mBlockSize + 1);
+                float y = (blockToAdd.GetAARectangle().GetTopLeft().GetY() - mBorder.GetTopLeft().GetY()) / (mBlockSize + 1);
+
+                x = std::floor(x);
+                y = std::floor(y);
+
+                rows[(int)y] += 1;
+                columns[(int)x] += 1;
             }
             ResetCurrentShape();
             return true;
@@ -301,29 +405,57 @@ bool Tetris::CheckForCollision(BoardSides side)
 
     return false;
 }
+// TODO Figure what just fucking blew up and is now
+//  crashing the fucking game!
 
-void Tetris::DeleteCompleteRows()
+void Tetris::IsGameOver()
 {
-
-    int rowsDeleted = 0;
-    // TODO Implement checks for complete rows
-    // then update score
-    if (rowsDeleted > 0)
+    if (mGameState == TETRIS_PLAYING)
     {
+        int minX = mBorder.GetTopLeft().GetX() + (mBlockSize * 4) + 1;
+        int maxX = mBorder.GetBottomRight().GetX() - (mBlockSize * 4) - 1;
+        int minY = mBorder.GetTopLeft().GetY() + 1;
+        if (rows[0] > 0)
+        {
 
-        UpdateScore(rowsDeleted);
+            if (mBlocks.size() > 0)
+            {
+                for (auto &block : mBlocks)
+                {
+
+                    if (block.GetAARectangle().GetTopLeft().GetY() <= minY && (minX <= block.GetAARectangle().GetTopLeft().GetX() <= maxX))
+                    {
+                        std::cout << "Game over." << std::endl;
+                        // mBlocks.clear();
+                        mGameState = TETRIS_NOT_STARTED;
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
 
-void Tetris::UpdateScore(int amount)
+void Tetris::StartGame()
 {
-    if (amount == 4)
+    if (mGameState == TETRIS_NOT_STARTED)
     {
-        mScore += 1000;
+        mGameState = TETRIS_PLAYING;
+        mBlocks.clear();
+        for (int i = 0; i < mPlayingWidthSquares; i++)
+        {
+            columns[i] = 0;
+        }
+        for (int i = 0; i < mPlayingHeightSquares; i++)
+        {
+            rows[i] = 0;
+        }
+        mSpeed = STARTSPEED;
+        mAmountBetweenUpdate = 0;
+        std::srand(int(time(0)));
+        int randomNum = std::rand() % NUM_SHAPES;
+        mNextShape.Init((ShapeType)randomNum, mBlockSize, mNextShapeBorder.GetTopLeft().GetX() + mBlockSize, mNextShapeBorder.GetTopLeft().GetY() + mBlockSize);
+        SDL_Delay(1000);
+        ResetCurrentShape();
     }
-    else
-    {
-        mScore += (amount * 100);
-    }
-    std::cout << "Score is: " << mScore << std::endl;
 }

@@ -30,6 +30,7 @@ public:
     inline void SetCanMove(bool move) { mCanMove = move; }
     inline bool GetCanMove() { return mCanMove; }
     inline std::vector<TetrisBlock> &GetBlocks() { return mBlocks; }
+    inline ShapeType GetShapeType() { return mShapeType; }
     int GetWidth();
     int GetHeight();
 

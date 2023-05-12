@@ -170,7 +170,8 @@ void TetrisShape::CreateL(int startX, int startY)
             rect.MoveBy(Vec2D(mSize + 1, 0));
         }
     }
-    rect.MoveBy(Vec2D(0, -mSize - 1));
+
+    rect.MoveTo(Vec2D(startX, startY + mSize + 1));
     mBlocks.push_back(TetrisBlock(rect, Color::Cyan(), Color::Blue()));
 }
 void TetrisShape::CreateS(int startX, int startY)
