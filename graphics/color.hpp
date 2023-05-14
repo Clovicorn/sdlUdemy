@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GRAPHICS_COLOR_H_
+#define GRAPHICS_COLOR_H_
 
 #include <stdint.h>
 #include <SDL2/SDL.h>
@@ -45,3 +46,5 @@ public:
     bool operator==(const Color &c) const;
     bool operator!=(const Color &c) const;
 };
+
+#endif /* GRAPHICS_COLOR_H_ */

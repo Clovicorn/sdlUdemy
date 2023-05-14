@@ -1,4 +1,6 @@
 #include "triangle.hpp"
+#include <cmath>
+#include "../utils/utils.hpp"
 
 Triangle::Triangle() {}
 Triangle::Triangle(const Vec2D &p0, const Vec2D &p1, const Vec2D &p2)

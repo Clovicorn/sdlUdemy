@@ -1,7 +1,9 @@
-#pragma once
+#ifndef SCREEN_BUFFER_H
+#define SCREEN_BUFFER_H
 
 #include <stdint.h>
 #include <assert.h>
+
 #include "color.hpp"
 
 struct SDL_Surface;
@@ -24,3 +26,5 @@ private:
     SDL_Surface *mSurface;
     uint32_t GetIndex(int row, int column);
 };
+
+#endif /* SCREEN_BUFFER_H */

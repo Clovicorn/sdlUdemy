@@ -1,4 +1,5 @@
 #include "gameScene.hpp"
+#include "../games/game.hpp"
 
 GameScene::GameScene(std::unique_ptr<Game> ptrGame) : mGame(std::move(ptrGame))
 {

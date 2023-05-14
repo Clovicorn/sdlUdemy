@@ -1,8 +1,7 @@
-#pragma once
+#ifndef CIRCLE_H
+#define CIRCLE_H
 
-#include <cmath>
 #include "shape.hpp"
-#include "../utils/utils.hpp"
 
 class Circle : public Shape
 {
@@ -20,3 +19,5 @@ public:
 private:
     float mRadius;
 };
+
+#endif /* CIRCLE_H */

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_CONTROLLER_H
+#define GAME_CONTROLLER_H
 
 #include <vector>
 #include <SDL2/SDL.h>
@@ -35,3 +36,5 @@ private:
     std::vector<MouseButtonAction> mMouseButtonActions;
     MouseMoveAction mMouseMovedAction;
 };
+
+#endif /* GAME_CONTROLLER_H */

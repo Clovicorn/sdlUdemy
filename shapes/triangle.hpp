@@ -1,6 +1,6 @@
-#pragma once
-#include <cmath>
-#include "../utils/utils.hpp"
+#ifndef TRIANGLE_H
+#define TRIANGLE_H
+
 #include "shape.hpp"
 
 class Triangle : public Shape
@@ -24,3 +24,5 @@ public:
 private:
     float Area(const Vec2D &p0, const Vec2D &p1, const Vec2D &p2) const;
 };
+
+#endif /* TRIANGLE_H */

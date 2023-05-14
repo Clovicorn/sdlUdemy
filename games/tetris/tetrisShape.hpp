@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TETRIS_SHAPE_H
+#define TETRIS_SHAPE_H
 
 #include <vector>
 
@@ -48,3 +49,5 @@ private:
     int mSize = 0;
     std::vector<TetrisBlock> mBlocks;
 };
+
+#endif /* TETRIS_SHAPE_H */

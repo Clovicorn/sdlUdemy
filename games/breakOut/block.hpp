@@ -1,11 +1,12 @@
-#pragma once
+#ifndef BLOCK_H
+#define BLOCK_H
 
-#include <algorithm>
-
-#include "ball.hpp"
 #include "excluder.hpp"
 #include "../../graphics/color.hpp"
-#include "../../graphics/screen.hpp"
+
+class Screen;
+class AARectangle;
+class Ball;
 
 class Block : public Excluder
 {
@@ -26,3 +27,5 @@ private:
     Color mFill;
     int mHP;
 };
+
+#endif /* BLOCK_H */

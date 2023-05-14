@@ -1,4 +1,6 @@
 #include "excluder.hpp"
+#include <cmath>
+#include "../../utils/utils.hpp"
 
 void Excluder::Init(const AARectangle &rect, bool reverseNormals)
 {

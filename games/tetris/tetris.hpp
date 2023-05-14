@@ -1,13 +1,9 @@
-#pragma once
+#ifndef TETRIS_H
+#define TETRIS_H
 
-#include <algorithm>
-#include <iostream>
 #include <vector>
-#include <time.h>
-#include <stdlib.h>
-#include "../../app/app.hpp"
+
 #include "../game.hpp"
-#include "../../input/gameController.hpp"
 #include "../../shapes/aaRectangle.hpp"
 #include "tetrisBlock.hpp"
 #include "tetrisShape.hpp"
@@ -26,6 +22,9 @@ enum TetrisGameState
     TETRIS_GAME_OVER,
     TETRIS_PAUSED,
 };
+
+class GameController;
+class Screen;
 
 class Tetris : public Game
 {
@@ -48,7 +47,7 @@ private:
     void DeleteCompleteRows();
     void UpdateScore(int amount);
 
-    static const int STARTSPEED = 60;
+    static const int STARTSPEED = 30;
     static const unsigned int mPlayingHeightSquares = 20;
     static const unsigned int mPlayingWidthSquares = 10;
     const int BORDER_WIDTH = 10;
@@ -57,15 +56,22 @@ private:
     unsigned int mScreenHeight;
 
     int mScore = 0;
+
     int mSpeed = 0;
+    int mSpeedUp = 50;
+    int mMaxSpeed = 2;
+    int mTotalRowsCompleted = 0;
     int mAmountBetweenUpdate = 0;
     unsigned int mBlockSize = 12;
     std::vector<TetrisBlock> mBlocks;
     int rows[20] = {0};
     int columns[10] = {0};
+
     TetrisGameState mGameState = TETRIS_NOT_STARTED;
     TetrisShape mNextShape;
     TetrisShape mCurrentShape;
     AARectangle mBorder;
     AARectangle mNextShapeBorder;
 };
+
+#endif /* TETRIS_H */

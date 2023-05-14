@@ -1,4 +1,5 @@
 #include "levelBoundary.hpp"
+#include "ball.hpp"
 
 LevelBoundary::LevelBoundary(const AARectangle &rect)
 {

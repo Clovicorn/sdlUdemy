@@ -17,10 +17,10 @@ bool App::Init(uint32_t width, uint32_t height, uint32_t mag)
         PushScene(std::move(arcadeScene));
 
         // temp setup
-        mScreen.SetClearColor(Color(100, 100, 100, 255));
-        std::unique_ptr<Tetris> breakOutGame = std::make_unique<Tetris>();
-        std::unique_ptr<GameScene> tetrisScene = std::make_unique<GameScene>(std::move(breakOutGame));
-        PushScene(std::move(tetrisScene));
+        // mScreen.SetClearColor(Color(100, 100, 100, 255));
+        // std::unique_ptr<Tetris> breakOutGame = std::make_unique<Tetris>();
+        // std::unique_ptr<GameScene> tetrisScene = std::make_unique<GameScene>(std::move(breakOutGame));
+        // PushScene(std::move(tetrisScene));
     }
 
     return mWindow != nullptr;

@@ -1,4 +1,6 @@
 #include "line2D.hpp"
+#include <cmath>
+#include "../utils/utils.hpp"
 
 Line2D::Line2D() : Line2D(Vec2D::Zero, Vec2D::Zero)
 {

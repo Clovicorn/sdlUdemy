@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SHAPE_H
+#define SHAPE_H
 
 #include <vector>
 #include "../utils/vec2d.hpp"
@@ -14,3 +15,5 @@ public:
 protected:
     std::vector<Vec2D> mPoints;
 };
+
+#endif /* SHAPE_H */

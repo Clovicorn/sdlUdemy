@@ -1,5 +1,12 @@
 #include "tetris.hpp"
 
+#include <algorithm>
+#include <iostream>
+#include <time.h>
+#include <stdlib.h>
+#include "../../app/app.hpp"
+#include "../../input/gameController.hpp"
+
 void Tetris::Draw(Screen &screen)
 {
     screen.Draw(mBorder, Color::White(), true, Color::Black());
@@ -46,7 +53,7 @@ void Tetris::Update(uint32_t dt)
 {
     if (mGameState == TETRIS_PLAYING)
     {
-        if (mAmountBetweenUpdate >= 60)
+        if (mAmountBetweenUpdate >= mSpeed)
         {
 
             mAmountBetweenUpdate = 0;
@@ -82,7 +89,7 @@ void Tetris::DeleteCompleteRows()
     for (int i = 0; i < mPlayingHeightSquares; i++)
     {
 
-        if (rows[i] == 10)
+        if (rows[i] == mPlayingWidthSquares)
         {
             rowsDeleted.push_back(i);
             int y = (i * (mBlockSize + 1)) + mBorder.GetTopLeft().GetY() + 1;
@@ -136,7 +143,10 @@ void Tetris::DeleteCompleteRows()
                 columns[i] -= rowsDelAmount;
             }
         }
-
+        if (mTotalRowsCompleted % mSpeedUp == 0 && mSpeed >= mMaxSpeed)
+        {
+            mSpeed -= 1;
+        }
         UpdateScore(rowsDelAmount);
     }
 }
@@ -452,6 +462,7 @@ void Tetris::StartGame()
         }
         mSpeed = STARTSPEED;
         mAmountBetweenUpdate = 0;
+        mTotalRowsCompleted = 0;
         std::srand(int(time(0)));
         int randomNum = std::rand() % NUM_SHAPES;
         mNextShape.Init((ShapeType)randomNum, mBlockSize, mNextShapeBorder.GetTopLeft().GetX() + mBlockSize, mNextShapeBorder.GetTopLeft().GetY() + mBlockSize);

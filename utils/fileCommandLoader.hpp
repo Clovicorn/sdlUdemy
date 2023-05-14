@@ -1,11 +1,13 @@
-#pragma once
+#ifndef FILE_COMMAND_LOADER_H
+#define FILE_COMMAND_LOADER_H
 
 #include <functional>
 #include <fstream>
 #include <string>
 #include <vector>
-#include "vec2d.hpp"
-#include "../graphics/color.hpp"
+
+class Vec2D;
+class Color;
 
 enum CommandType
 {
@@ -42,3 +44,5 @@ public:
 private:
     std::vector<Command> mCommands;
 };
+
+#endif /* FILE_COMMAND_LOADER_H */

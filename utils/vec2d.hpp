@@ -1,8 +1,8 @@
-#pragma once
+#ifndef VEC2D_H
+#define VEC2D_H
 
 #include <iostream>
 #include <assert.h>
-#include "utils.hpp"
 
 using namespace std;
 class Vec2D
@@ -54,3 +54,5 @@ private:
     float mX;
     float mY;
 };
+
+#endif /* VEC2D_H */

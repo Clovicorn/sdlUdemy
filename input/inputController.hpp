@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INPUT_CONTROLLER_H
+#define INPUT_CONTROLLER_H
 
 #include <SDL2/SDL.h>
 #include "inputAction.hpp"
@@ -16,3 +17,5 @@ private:
     InputAction mQuit;
     GameController *mCurrentController;
 };
+
+#endif /* INPUT_CONTROLLER_H */

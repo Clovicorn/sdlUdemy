@@ -1,10 +1,10 @@
-#pragma once
+#ifndef HIGHSCORES_H
+#define HIGHSCORES_H
 
 #include <string>
 #include <vector>
 
-#include "../../graphics/screen.hpp"
-#include "../../utils/fileCommandLoader.hpp"
+class Screen;
 
 struct NameScore
 {
@@ -29,3 +29,5 @@ private:
     std::string mPathAndFileName;
     std::vector<NameScore> mScores;
 };
+
+#endif /* HIGHSCORES_H */

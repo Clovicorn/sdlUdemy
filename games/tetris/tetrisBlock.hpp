@@ -1,6 +1,6 @@
-#pragma once
+#ifndef TETRIS_BLOCK_H
+#define TETRIS_BLOCK_H
 
-#include "../../graphics/screen.hpp"
 #include "../../shapes/aaRectangle.hpp"
 #include "../../graphics/color.hpp"
 
@@ -18,6 +18,8 @@ enum BlockSide
     BOTTOM_SIDE,
     LEFT_SIDE
 };
+
+class Screen;
 
 class TetrisBlock
 {
@@ -47,3 +49,5 @@ private:
     Color mOutline;
     Color mFill;
 };
+
+#endif /* TETRIS_BLOCK_H */

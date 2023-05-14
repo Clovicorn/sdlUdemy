@@ -1,4 +1,7 @@
 #include "arcadeScene.hpp"
+#include "scene.hpp"
+#include "../app/app.hpp"
+#include "../utils/vec2d.hpp"
 
 ArcadeScene::ArcadeScene()
 {
@@ -6,6 +9,10 @@ ArcadeScene::ArcadeScene()
 
 void ArcadeScene::Init()
 {
+    std::string path = "ArcadeFont";
+    mSpriteSheet.SetBasePath(App::Singleton().GetBasePath());
+    mSpriteSheet.SetCurrentWorkingDir("assets\\");
+    mSpriteSheet.Load(path);
     ButtonAction action;
     action.Key = GameController::Action();
     action.Action = [](uint32_t dt, InputState state)
@@ -38,6 +45,8 @@ void ArcadeScene::Init()
 
 void ArcadeScene::Draw(Screen &theScreen)
 {
+    Vec2D drawPoint(10, 10);
+    theScreen.Draw(mSpriteSheet, "C", drawPoint);
 }
 
 void ArcadeScene::Update(uint32_t dt)

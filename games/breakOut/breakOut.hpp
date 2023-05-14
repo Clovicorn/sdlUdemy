@@ -1,16 +1,18 @@
-#pragma once
+#ifndef BREAKOUT_H
+#define BREAKOUT_H
 
 #include <iostream>
 #include <vector>
-#include "../../app/app.hpp"
-#include "../game.hpp"
-#include "../../input/gameController.hpp"
 
+#include "../game.hpp"
 #include "ball.hpp"
 #include "levelBoundary.hpp"
 #include "paddle.hpp"
 #include "breakOutLevel.hpp"
 #include "highScores.hpp"
+
+class GameController;
+class App;
 
 enum BreakOutGameStates
 {
@@ -48,3 +50,5 @@ private:
     BreakOutGameStates mGameState;
     int mLives = 3;
 };
+
+#endif /* BREAKOUT_H */

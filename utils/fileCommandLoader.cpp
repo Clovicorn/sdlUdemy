@@ -1,4 +1,6 @@
 #include "fileCommandLoader.hpp"
+#include "vec2d.hpp"
+#include "../graphics/color.hpp"
 
 void FileCommandLoader::AddCommand(const Command &command)
 {

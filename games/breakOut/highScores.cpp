@@ -1,4 +1,6 @@
 #include "highScores.hpp"
+#include "../../graphics/screen.hpp"
+#include "../../utils/fileCommandLoader.hpp"
 
 HighScores::HighScores()
 {

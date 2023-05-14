@@ -1,5 +1,9 @@
 #include "ball.hpp"
 
+#include "../../graphics/screen.hpp"
+#include "../../utils/utils.hpp"
+#include "boundaryEdge.hpp"
+
 Ball::Ball() : Ball(Vec2D::Zero, RADIUS)
 {
 }

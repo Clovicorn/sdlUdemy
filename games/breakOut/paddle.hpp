@@ -1,11 +1,12 @@
-#pragma once
+#ifndef PADDLE_H
+#define PADDLE_H
 
 #include <stdint.h>
 #include "excluder.hpp"
-#include "boundaryEdge.hpp"
-#include "ball.hpp"
-#include "../../graphics/screen.hpp"
-#include "../../utils/utils.hpp"
+
+class Screen;
+class BoundaryEdge;
+class Ball;
 
 enum PaddleDirection
 {
@@ -39,3 +40,5 @@ private:
     const float VELOCITY = 100.0f;
     const float CORNER_EDGE_AMOUNT = 0.03f;
 };
+
+#endif /* PADDLE_H */

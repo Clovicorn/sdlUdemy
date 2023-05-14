@@ -1,4 +1,5 @@
 #include "tetrisBlock.hpp"
+#include "../../graphics/screen.hpp"
 
 TetrisBlock::TetrisBlock() : mRect(Vec2D::Zero, 0, 0), mOutline(Color::Black()), mFill(Color::Black())
 {

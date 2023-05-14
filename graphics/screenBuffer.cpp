@@ -1,5 +1,6 @@
 #include "screenBuffer.hpp"
 #include <iostream>
+
 ScreenBuffer::ScreenBuffer() : mSurface(nullptr)
 {
 }

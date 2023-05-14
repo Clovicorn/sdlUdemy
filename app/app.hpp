@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APP_H
+#define APP_H
 
 #include <stdint.h>
 #include <SDL2/SDL.h>
@@ -40,6 +41,8 @@ private:
     float mDT = 1 / mFPS * 1000;
     Screen mScreen;
     SDL_Window *mWindow;
-    std::vector<unique_ptr<Scene>> mScenes;
+    std::vector<std::unique_ptr<Scene>> mScenes;
     InputController mInputController;
 };
+
+#endif /* APP_H */

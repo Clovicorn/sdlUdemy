@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INPUT_ACTION_H
+#define INPUT_ACTION_H
 
 #include <functional>
 #include <stdint.h>
@@ -28,3 +29,5 @@ struct MouseButtonAction
     MouseButton mouseButton;
     MouseInputAction mouseAction;
 };
+
+#endif /* INPUT_ACTION_H */

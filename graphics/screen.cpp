@@ -1,4 +1,12 @@
 #include "screen.hpp"
+#include "bmpImage.hpp"
+#include "../utils/vec2d.hpp"
+#include "../utils/utils.hpp"
+#include "../shapes/line2D.hpp"
+#include "../shapes/triangle.hpp"
+#include "../shapes/aaRectangle.hpp"
+#include "../shapes/circle.hpp"
+#include "spriteSheet.hpp"
 
 Screen::Screen() : mWindow(nullptr), mSurface(nullptr), mWidth(0), mHeight(0)
 {
@@ -192,6 +200,40 @@ void Screen::Draw(Circle &circle, const Color &color, bool fill, const Color &fi
     {
         FillPoly(points, fillColor);
     }
+}
+
+void Screen::Draw(BMPImage &image, Vec2D &pos)
+{
+    uint32_t width = image.GetWidth();
+    uint32_t height = image.GetHeight();
+
+    for (uint32_t r = 0; r < height; r++)
+    {
+        for (uint32_t c = 0; c < width; c++)
+        {
+            Draw(c + pos.GetX(), r + pos.GetY(), image.GetPixels()[GetIndex(width, r, c)]);
+        }
+    }
+}
+
+void Screen::Draw(BMPImage &image, Sprite &sprite, Vec2D &pos)
+{
+    uint32_t width = sprite.width;
+    uint32_t height = sprite.height;
+
+    for (uint32_t r = 0; r < height; r++)
+    {
+        for (uint32_t c = 0; c < width; c++)
+        {
+            Draw(c + pos.GetX(), r + pos.GetY(), image.GetPixels()[GetIndex(image.GetWidth(), r + sprite.yPos, c + sprite.xPos)]);
+        }
+    }
+}
+
+void Screen::Draw(SpriteSheet &ss, const std::string &spriteName, Vec2D &pos)
+{
+    Sprite sprite = ss.GetSprite(spriteName);
+    Draw(ss.GetBMPImage(), sprite, pos);
 }
 
 void Screen::FillPoly(const std::vector<Vec2D> &points, const Color &color)

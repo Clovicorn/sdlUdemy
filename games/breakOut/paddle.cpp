@@ -1,4 +1,8 @@
 #include "paddle.hpp"
+#include "boundaryEdge.hpp"
+#include "ball.hpp"
+#include "../../graphics/screen.hpp"
+#include "../../utils/utils.hpp"
 
 void Paddle::Init(AARectangle &rect, int screenWidth, int screenHeight)
 {

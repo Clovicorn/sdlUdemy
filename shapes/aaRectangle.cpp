@@ -1,4 +1,5 @@
 #include "aaRectangle.hpp"
+#include <cmath>
 
 AARectangle::AARectangle() : AARectangle(Vec2D::Zero, Vec2D::Zero)
 {

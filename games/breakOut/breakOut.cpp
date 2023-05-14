@@ -1,5 +1,8 @@
 #include "breakOut.hpp"
 
+#include "../../app/app.hpp"
+#include "../../input/gameController.hpp"
+
 void BreakOut::Init(GameController &controller)
 {
     mScreenWidth = App::Singleton().Width();

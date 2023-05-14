@@ -1,18 +1,24 @@
-#pragma once
+#ifndef SCREEN_H_
+#define SCREEN_H_
 
 #include <iostream>
 #include <cmath>
 #include <algorithm>
 #include <stdlib.h>
+#include <vector>
 #include "stdint.h"
-#include "Color.hpp"
+
+#include "color.hpp"
 #include "screenBuffer.hpp"
-#include "../utils/vec2d.hpp"
-#include "../utils/utils.hpp"
-#include "../shapes/line2D.hpp"
-#include "../shapes/triangle.hpp"
-#include "../shapes/aaRectangle.hpp"
-#include "../shapes/circle.hpp"
+
+class BMPImage;
+class Vec2D;
+class Line2D;
+class Triangle;
+class AARectangle;
+class Circle;
+class SpriteSheet;
+struct Sprite;
 
 class Screen
 {
@@ -33,6 +39,9 @@ public:
     void Draw(Triangle &triangle, const Color &color, bool fill = false, const Color &fillColor = Color::White());
     void Draw(AARectangle &rect, const Color &color, bool fill = false, const Color &fillColor = Color::White());
     void Draw(Circle &circle, const Color &color, bool fill = false, const Color &fillColor = Color::White());
+    void Draw(BMPImage &image, Vec2D &pos);
+    void Draw(BMPImage &image, Sprite &sprite, Vec2D &pos);
+    void Draw(SpriteSheet &ss, const std::string &spriteName, Vec2D &pos);
 
 private:
     // Not allowing copying of class
@@ -51,3 +60,5 @@ private:
     SDL_Window *mWindow;
     SDL_Surface *mSurface;
 };
+
+#endif /* SCREEN_H_ */

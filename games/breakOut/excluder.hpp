@@ -1,9 +1,8 @@
-#pragma once
+#ifndef EXCLUDER_H
+#define EXCLUDER_H
 
 #include "boundaryEdge.hpp"
 #include "../../shapes/aaRectangle.hpp"
-#include <cmath>
-#include "../../utils/utils.hpp"
 
 class Excluder
 {
@@ -25,3 +24,5 @@ private:
     BoundaryEdge mEdges[NUM_EDGES + 1];
     bool mReverseNormals;
 };
+
+#endif /* EXCLUDER_H */

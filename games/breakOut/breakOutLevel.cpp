@@ -1,5 +1,11 @@
 #include "breakOutLevel.hpp"
 
+#include <algorithm>
+#include "../../graphics/screen.hpp"
+#include "../../utils/fileCommandLoader.hpp"
+#include "ball.hpp"
+#include "layoutBlock.hpp"
+
 BreakOutLevel::BreakOutLevel()
 {
 }

@@ -1,7 +1,8 @@
-#pragma once
+#ifndef LEVEL_BOUNDARY_H
+#define LEVEL_BOUNDARY_H
 
-#include "ball.hpp"
 #include "excluder.hpp"
+class Ball;
 
 class LevelBoundary
 {
@@ -15,3 +16,5 @@ private:
     bool HasCollidedWithEdge(Ball &ball, const BoundaryEdge &edge) const;
     Excluder mIncluder;
 };
+
+#endif /* LEVEL_BOUNDARY_H */

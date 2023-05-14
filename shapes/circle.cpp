@@ -1,4 +1,6 @@
 #include "circle.hpp"
+#include <cmath>
+#include "../utils/utils.hpp"
 
 Circle::Circle() : Circle(Vec2D::Zero, 0)
 {

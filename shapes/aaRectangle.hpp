@@ -1,7 +1,7 @@
-#pragma once
+#ifndef AARECTANGLE_H
+#define AARECTANGLE_H
 
 #include "shape.hpp"
-#include <cmath>
 
 class AARectangle : public Shape
 {
@@ -32,3 +32,5 @@ public:
 
 private:
 };
+
+#endif /* AARECTANGLE_H */

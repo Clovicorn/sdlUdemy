@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LINE2D_H
+#define LINE2D_H
 
 #include "../utils/vec2d.hpp"
 
@@ -29,3 +30,5 @@ private:
     Vec2D mP0;
     Vec2D mP1;
 };
+
+#endif /* LINE2D_H */

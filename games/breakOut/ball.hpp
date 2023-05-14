@@ -1,10 +1,11 @@
-#pragma once
+#ifndef BALL_H
+#define BALL_H
 
 #include "../../shapes/aaRectangle.hpp"
 #include "../../shapes/circle.hpp"
-#include "../../graphics/screen.hpp"
-#include "../../utils/utils.hpp"
-#include "boundaryEdge.hpp"
+
+class Screen;
+struct BoundaryEdge;
 
 class Ball
 {
@@ -31,3 +32,5 @@ private:
     Vec2D mVelocity;
     const float RADIUS = 5.0f;
 };
+
+#endif /* BALL_H */

@@ -1,7 +1,13 @@
-#pragma once
+#ifndef ARCADE_SCENE_H
+#define ARCADE_SCENE_H
 
 #include <memory>
+
 #include "scene.hpp"
+#include "../graphics/spriteSheet.hpp"
+
+class App;
+class Vec2D;
 
 enum eGame
 {
@@ -24,4 +30,7 @@ public:
 private:
     std::unique_ptr<Scene> GetScene(eGame game);
     std::string mSceneName = "Arcade Scene";
+    SpriteSheet mSpriteSheet;
 };
+
+#endif /* ARCADE_SCENE_H */

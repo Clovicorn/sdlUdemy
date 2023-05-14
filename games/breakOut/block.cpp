@@ -1,5 +1,9 @@
 #include "block.hpp"
 
+#include <algorithm>
+#include "ball.hpp"
+#include "../../graphics/screen.hpp"
+
 void Block::Init(const AARectangle &rect, int hp, const Color &outline, const Color &fill)
 {
     Excluder::Init(rect);

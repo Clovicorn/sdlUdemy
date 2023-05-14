@@ -1,8 +1,9 @@
-#pragma once
+#ifndef GAME_SCENE_H
+#define GAME_SCENE_H
 
 #include <memory>
 #include "scene.hpp"
-#include "../games/game.hpp"
+class Game;
 
 class GameScene : public Scene
 {
@@ -18,3 +19,5 @@ protected:
     std::unique_ptr<Game> mGame;
     std::string mName;
 };
+
+#endif /* GAME_SCENE_H */
