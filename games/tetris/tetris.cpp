@@ -7,10 +7,23 @@
 #include "../../app/app.hpp"
 #include "../../input/gameController.hpp"
 
+Tetris::~Tetris()
+{
+    App::Singleton().SetRendererClearColor(Color::Black());
+}
 void Tetris::Draw(Screen &screen)
 {
+    AARectangle scoreRect(Vec2D(mNextShapeBorder.GetTopLeft().GetX(), mNextShapeBorder.GetTopLeft().GetY() + 150), mNextShapeBorder.GetWidth(), 20);
+    Vec2D nextPos(mNextShapeBorder.GetTopLeft().GetX() + 20, mNextShapeBorder.GetTopLeft().GetY() - 10);
+    Vec2D scorePos(scoreRect.GetTopLeft().GetX() + 15, scoreRect.GetTopLeft().GetY() - 10);
     screen.Draw(mBorder, Color::White(), true, Color::Black());
     screen.Draw(mNextShapeBorder, Color::White(), true, Color::Black());
+    std::string scoreText = to_string(mScore);
+    screen.Draw(scoreRect, Color::White(), true, Color::Black());
+    Vec2D scoreTextPos = mFont.GetDrawPosition(scoreText, scoreRect, BFXA_CENTER, BFYA_CENTER);
+    screen.Draw(mFont, std::string("Next:"), nextPos, Color::White());
+    screen.Draw(mFont, std::string("Score"), scorePos, Color::White());
+    screen.Draw(mFont, scoreText, scoreTextPos, Color::White());
     if (mGameState == TETRIS_PLAYING)
     {
         for (auto &block : mCurrentShape.GetBlocks())
@@ -34,6 +47,9 @@ void Tetris::Init(GameController &controller)
 {
     mScreenWidth = App::Singleton().Width();
     mScreenHeight = App::Singleton().Height();
+    mFont = App::Singleton().GetFont();
+    Color renderColor(100, 100, 100, 255);
+    App::Singleton().SetRendererClearColor(renderColor);
     CreateControls(controller);
 
     // border_width = 10
@@ -161,7 +177,6 @@ void Tetris::UpdateScore(int amount)
     {
         mScore += (amount * 100);
     }
-    std::cout << "Score is: " << mScore << std::endl;
 }
 
 std::string Tetris::GetName()
@@ -415,8 +430,6 @@ bool Tetris::CheckForCollision(BoardSides side)
 
     return false;
 }
-// TODO Figure what just fucking blew up and is now
-//  crashing the fucking game!
 
 void Tetris::IsGameOver()
 {
@@ -435,7 +448,6 @@ void Tetris::IsGameOver()
 
                     if (block.GetAARectangle().GetTopLeft().GetY() <= minY && (minX <= block.GetAARectangle().GetTopLeft().GetX() <= maxX))
                     {
-                        std::cout << "Game over." << std::endl;
                         // mBlocks.clear();
                         mGameState = TETRIS_NOT_STARTED;
                         break;

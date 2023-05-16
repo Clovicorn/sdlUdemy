@@ -2,6 +2,8 @@
 #include "scene.hpp"
 #include "../app/app.hpp"
 #include "../utils/vec2d.hpp"
+#include "../graphics/bitmapFont.hpp"
+#include "../shapes/aaRectangle.hpp"
 
 ArcadeScene::ArcadeScene()
 {
@@ -9,10 +11,6 @@ ArcadeScene::ArcadeScene()
 
 void ArcadeScene::Init()
 {
-    std::string path = "ArcadeFont";
-    mSpriteSheet.SetBasePath(App::Singleton().GetBasePath());
-    mSpriteSheet.SetCurrentWorkingDir("assets\\");
-    mSpriteSheet.Load(path);
     ButtonAction action;
     action.Key = GameController::Action();
     action.Action = [](uint32_t dt, InputState state)
@@ -46,7 +44,10 @@ void ArcadeScene::Init()
 void ArcadeScene::Draw(Screen &theScreen)
 {
     Vec2D drawPoint(10, 10);
-    theScreen.Draw(mSpriteSheet, "C", drawPoint);
+    BitmapFont &font = App::Singleton().GetFont();
+    AARectangle rect(Vec2D::Zero, App::Singleton().Width(), App::Singleton().Height());
+    Vec2D textPos = font.GetDrawPosition(GetSceneName(), rect, BFXA_CENTER, BFYA_CENTER);
+    theScreen.Draw(font, GetSceneName(), textPos, Color::Red());
 }
 
 void ArcadeScene::Update(uint32_t dt)

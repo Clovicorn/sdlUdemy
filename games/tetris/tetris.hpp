@@ -5,6 +5,7 @@
 
 #include "../game.hpp"
 #include "../../shapes/aaRectangle.hpp"
+#include "../../graphics/bitmapFont.hpp"
 #include "tetrisBlock.hpp"
 #include "tetrisShape.hpp"
 
@@ -29,6 +30,7 @@ class Screen;
 class Tetris : public Game
 {
 public:
+    ~Tetris();
     virtual void Init(GameController &controller) override;
     virtual void Update(uint32_t dt) override;
     virtual void Draw(Screen &screen) override;
@@ -72,6 +74,7 @@ private:
     TetrisShape mCurrentShape;
     AARectangle mBorder;
     AARectangle mNextShapeBorder;
+    BitmapFont mFont;
 };
 
 #endif /* TETRIS_H */

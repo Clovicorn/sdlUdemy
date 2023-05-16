@@ -25,11 +25,13 @@ games/tetris/tetris.cpp
 games/tetris/tetrisBlock.cpp
 games/tetris/tetrisShape.cpp
 
-graphics/color.cpp
-graphics/screenBuffer.cpp
-graphics/screen.cpp
 graphics/bmpImage.cpp
+graphics/bitmapFont.cpp
+graphics/color.cpp
+graphics/screen.cpp
+graphics/screenBuffer.cpp
 graphics/spriteSheet.cpp
+
 
 input/gameController.cpp
 input/inputController.cpp

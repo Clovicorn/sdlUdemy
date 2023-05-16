@@ -1,4 +1,5 @@
 #include "vec2d.hpp"
+#include <cmath>
 #include "utils.hpp"
 
 const Vec2D Vec2D::Zero;

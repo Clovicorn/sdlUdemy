@@ -1,5 +1,6 @@
 #include "spriteSheet.hpp"
 #include "../utils/fileCommandLoader.hpp"
+#include "../app/app.hpp"
 
 SpriteSheet::SpriteSheet()
 {
@@ -7,8 +8,8 @@ SpriteSheet::SpriteSheet()
 
 bool SpriteSheet::Load(const std::string &name)
 {
-    std::string bmpName = GetBasePath() + GetCurrentWorkingDir() + name + ".bmp";
-    std::string txtName = GetBasePath() + GetCurrentWorkingDir() + name + ".txt";
+    std::string bmpName = App::Singleton().GetBasePath() + "assets/" + name + ".bmp";
+    std::string txtName = App::Singleton().GetBasePath() + "assets/" + name + ".txt";
 
     bool loadBMPImage = mBMPImage.Load(bmpName);
     bool loadSpriteSection = LoadSpriteSections(txtName);
@@ -20,7 +21,7 @@ Sprite SpriteSheet::GetSprite(const std::string &spriteName) const
 {
     for (auto &spriteSection : mSections)
     {
-        if (spriteSection.key == spriteName)
+        if (StringCompare(spriteName, spriteSection.key))
         {
             return spriteSection.sprite;
         }

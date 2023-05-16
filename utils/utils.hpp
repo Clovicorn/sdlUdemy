@@ -1,8 +1,6 @@
-#pragma once
-#include <algorithm>
-#include <cmath>
+#ifndef UTILS_H
+#define UTILS_H
 #include <string>
-#include <cctype>
 
 static const float EPSILON = 0.0001f;
 const float PI = 3.14159f;
@@ -19,3 +17,13 @@ float MillisecondsToSeconds(unsigned int milliSeconds);
 unsigned int GetIndex(unsigned int width, unsigned int row, unsigned int column);
 
 bool StringCompare(const std::string &a, const std::string &b);
+
+float Clamp(float val, float min, float max);
+
+struct Size
+{
+    unsigned int width = 0;
+    unsigned int height = 0;
+};
+
+#endif /* UTILS_H */

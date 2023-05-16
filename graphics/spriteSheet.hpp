@@ -27,10 +27,6 @@ public:
 
     std::vector<std::string> GetSpriteNames() const;
 
-    inline void SetBasePath(const std::string &path) { mBasePath = path; }
-    inline void SetCurrentWorkingDir(const std::string &dir) { mCurrentWorkingDir = dir; }
-    inline const std::string &GetBasePath() { return mBasePath; }
-    inline const std::string &GetCurrentWorkingDir() { return mCurrentWorkingDir; }
     inline BMPImage &GetBMPImage() { return mBMPImage; }
     inline uint32_t GetWidth() { return mBMPImage.GetWidth(); }
     inline uint32_t GetHeight() { return mBMPImage.GetHeight(); }
@@ -42,8 +38,7 @@ private:
         std::string key = "";
         Sprite sprite;
     };
-    std::string mBasePath = "";
-    std::string mCurrentWorkingDir = "";
+
     BMPImage mBMPImage;
     std::vector<BMPImageSection> mSections;
 };

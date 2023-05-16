@@ -14,11 +14,12 @@ ScreenBuffer::~ScreenBuffer()
     if (mSurface)
     {
         SDL_FreeSurface(mSurface);
+        mSurface = nullptr;
     }
 }
 void ScreenBuffer::Init(uint32_t format, uint32_t width, uint32_t height)
 {
-    mSurface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, SDL_PIXELFORMAT_RGBA8888);
+    mSurface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, format);
     // Clear();
 }
 void ScreenBuffer::Clear(const Color &color)

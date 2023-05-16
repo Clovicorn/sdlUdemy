@@ -1,4 +1,8 @@
 #include "utils.hpp"
+#include <algorithm>
+#include <cmath>
+
+#include <cctype>
 
 bool IsEqual(float x, float y)
 {
@@ -33,4 +37,17 @@ bool StringCompare(const std::string &a, const std::string &b)
                           { return std::tolower(a) == std::tolower(b); });
     }
     return false;
+}
+
+float Clamp(float val, float min, float max)
+{
+    if (val > max)
+    {
+        return max;
+    }
+    else if (val < min)
+    {
+        return min;
+    }
+    return val;
 }

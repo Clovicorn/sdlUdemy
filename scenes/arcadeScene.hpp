@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "scene.hpp"
-#include "../graphics/spriteSheet.hpp"
 
 class App;
 class Vec2D;
@@ -30,7 +29,6 @@ public:
 private:
     std::unique_ptr<Scene> GetScene(eGame game);
     std::string mSceneName = "Arcade Scene";
-    SpriteSheet mSpriteSheet;
 };
 
 #endif /* ARCADE_SCENE_H */

@@ -1,5 +1,9 @@
 #include "app.hpp"
 
+#include "../scenes/arcadeScene.hpp"
+#include "../games/tetris/tetris.hpp"
+#include "../scenes/gameScene.hpp"
+
 App &App::Singleton()
 {
     static App theApp;
@@ -8,6 +12,11 @@ App &App::Singleton()
 
 bool App::Init(uint32_t width, uint32_t height, uint32_t mag)
 {
+    if (!mFont.Load("ArcadeFont"))
+    {
+        std::cout << "Failed to load font" << std::endl;
+        return false;
+    }
     mWindow = mScreen.Init(width, height, mag);
     if (mWindow)
     {
@@ -15,15 +24,20 @@ bool App::Init(uint32_t width, uint32_t height, uint32_t mag)
         std::unique_ptr<ArcadeScene>
             arcadeScene = std::make_unique<ArcadeScene>();
         PushScene(std::move(arcadeScene));
+        /* Temp Section*/
+        std::unique_ptr<Tetris> tetris = std::make_unique<Tetris>();
+        std::unique_ptr<GameScene> tetrisGame = std::make_unique<GameScene>(std::move(tetris));
+        PushScene(std::move(tetrisGame));
 
-        // temp setup
-        // mScreen.SetClearColor(Color(100, 100, 100, 255));
-        // std::unique_ptr<Tetris> breakOutGame = std::make_unique<Tetris>();
-        // std::unique_ptr<GameScene> tetrisScene = std::make_unique<GameScene>(std::move(breakOutGame));
-        // PushScene(std::move(tetrisScene));
+        /* */
     }
 
     return mWindow != nullptr;
+}
+
+void App::SetRendererClearColor(const Color &color)
+{
+    mScreen.SetRenderColor(color);
 }
 
 void App::SetFPS(float fps)
