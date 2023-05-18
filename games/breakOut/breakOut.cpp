@@ -5,10 +5,10 @@
 
 void BreakOut::Init(GameController &controller)
 {
+    mGameState = IN_GAME;
     mScreenWidth = App::Singleton().Width();
     mScreenHeight = App::Singleton().Height();
     mFont = App::Singleton().GetFont();
-    ResetGame();
     mBall.SetRadius(3.0f);
     mHighScores.Init(App::GetBasePath() + mHighScoreFile);
     controller.ClearAll();
@@ -46,37 +46,103 @@ void BreakOut::Update(uint32_t dt)
             }
         }
     }
-    GetCurrentLevel().Update(dt, mBall, &mHighScores);
-    // This should update 3 times a Second!
-    if (mCleanup == 20)
+    if (mGameState == IN_SERVE || mGameState == IN_PLAY)
     {
-        mCleanup = 0;
-        if (GetCurrentLevel().IsLevelComplete())
+        GetCurrentLevel().Update(dt, mBall, &mHighScores);
+        // This should update 3 times a Second!
+        if (mCleanup == 20)
         {
-            NextLevel();
+            mCleanup = 0;
+            if (GetCurrentLevel().IsLevelComplete())
+            {
+                NextLevel();
+            }
+        }
+        else
+        {
+            mCleanup++;
         }
     }
-    else
+    if (mGameState == IN_GAME_OVER)
     {
-        mCleanup++;
+        if (mTimeElapsed == 60)
+        {
+            mGameState = IN_GAME;
+            mTimeElapsed = 0;
+        }
+        else
+        {
+            mTimeElapsed += 1;
+        }
+    }
+    if (mGameState == IN_GAME)
+    {
+        if (mTimeElapsed == 45 && !mMsgPaused)
+        {
+            mShowQuitMsg = !mShowQuitMsg;
+            mMsgPaused = true;
+            mTimeElapsed = 0;
+        }
+        else if (mTimeElapsed == 20 && mMsgPaused)
+        {
+            mMsgPaused = false;
+            mTimeElapsed = 0;
+        }
+        else
+        {
+            mTimeElapsed += 1;
+        }
     }
 }
 
 void BreakOut::Draw(Screen &screen)
 {
-    mPaddle.Draw(screen);
+    if (mGameState == IN_PLAY || mGameState == IN_SERVE)
+    {
+        mPaddle.Draw(screen);
 
-    std::string lives = "Lives " + to_string(mLives);
-    Vec2D livesPos(5, mScreenHeight - 15);
-    screen.Draw(mFont, lives, livesPos);
+        std::string lives = "Lives " + to_string(mLives);
+        Vec2D livesPos(5, mScreenHeight - 15);
+        screen.Draw(mFont, lives, livesPos);
 
-    std::string scoreText = "Score " + mHighScores.GetScore();
-    Vec2D scorePos((mScreenWidth / 2) + 10, mScreenHeight - 15);
-    screen.Draw(mFont, scoreText, scorePos);
-    GetCurrentLevel().Draw(screen);
-    mBall.Draw(screen);
-    AARectangle boundary = mLevelBoundary.GetRectangle();
-    screen.Draw(boundary, Color::White());
+        std::string scoreText = "Score " + mHighScores.GetScore();
+        Vec2D scorePos((mScreenWidth / 2) + 10, mScreenHeight - 15);
+        screen.Draw(mFont, scoreText, scorePos);
+        GetCurrentLevel().Draw(screen);
+        mBall.Draw(screen);
+        AARectangle boundary = mLevelBoundary.GetRectangle();
+        screen.Draw(boundary, Color::White());
+    }
+    if (mGameState == IN_GAME_OVER)
+    {
+        AARectangle rect(Vec2D::Zero, mScreenWidth, mScreenHeight);
+        std::string gameOver = "Game Over!";
+        Vec2D pos(mFont.GetDrawPosition(gameOver, rect, BFXA_CENTER, BFYA_CENTER));
+        screen.Draw(mFont, gameOver, pos);
+    }
+    if (mGameState == IN_GAME)
+    {
+        AARectangle rect(Vec2D::Zero, mScreenWidth, mScreenHeight / 2);
+        std::string breakoutText = "BreakOut!";
+        Vec2D pos(mFont.GetDrawPosition(breakoutText, rect, BFXA_CENTER, BFYA_CENTER));
+        screen.Draw(mFont, breakoutText, pos, Color::Red());
+        if (!mMsgPaused)
+        {
+            AARectangle rect2(Vec2D(0, mScreenHeight / 2), mScreenWidth, mScreenHeight / 2);
+            if (mShowQuitMsg)
+            {
+                std::string quitText = "Press Escape to quit.";
+                Vec2D quitPos(mFont.GetDrawPosition(quitText, rect2, BFXA_CENTER, BFYA_CENTER));
+                screen.Draw(mFont, quitText, quitPos);
+            }
+            else
+            {
+                std::string spaceText = "Press Space to play.";
+                Vec2D playPos(mFont.GetDrawPosition(spaceText, rect2, BFXA_CENTER, BFYA_CENTER));
+                screen.Draw(mFont, spaceText, playPos);
+            }
+        }
+    }
 }
 
 std::string BreakOut::GetName()
@@ -91,16 +157,19 @@ std::string BreakOut::GetName()
  */
 void BreakOut::ResetGame()
 {
-    mGameState = IN_SERVE;
-    mLives = 3;
-    mCurrentLevel = 0;
-    mLevels = BreakOutLevel::LoadLevelsFromFile(App::GetBasePath() + "assets/BreakoutLevels.txt", mScreenWidth, mScreenHeight);
-    mHighScores.ResetScore();
-    mLevelBoundary = {AARectangle(Vec2D::Zero, mScreenWidth, mScreenHeight - 20)};
-    AARectangle rect(Vec2D(mScreenWidth / 2 - Paddle::PADDLE_WIDTH / 2, mScreenHeight - 4 * Paddle::PADDLE_HEIGHT), Paddle::PADDLE_WIDTH, Paddle::PADDLE_HEIGHT);
-    mLevels[mCurrentLevel].Init(mLevelBoundary.GetRectangle());
-    mPaddle.Init(rect, mScreenWidth, mScreenHeight);
-    mBall.MoveTo(Vec2D(mPaddle.GetTopLeft().GetX() + (mPaddle.GetAARectangle().GetWidth() / 2), mPaddle.GetTopLeft().GetY() - (mBall.GetRadius() * 2)));
+    if (mGameState == IN_GAME)
+    {
+        mGameState = IN_SERVE;
+        mLives = 3;
+        mCurrentLevel = 0;
+        mLevels = BreakOutLevel::LoadLevelsFromFile(App::GetBasePath() + "assets/BreakoutLevels.txt", mScreenWidth, mScreenHeight);
+        mHighScores.ResetScore();
+        mLevelBoundary = {AARectangle(Vec2D::Zero, mScreenWidth, mScreenHeight - 20)};
+        AARectangle rect(Vec2D(mScreenWidth / 2 - Paddle::PADDLE_WIDTH / 2, mScreenHeight - 4 * Paddle::PADDLE_HEIGHT), Paddle::PADDLE_WIDTH, Paddle::PADDLE_HEIGHT);
+        mLevels[mCurrentLevel].Init(mLevelBoundary.GetRectangle());
+        mPaddle.Init(rect, mScreenWidth, mScreenHeight);
+        mBall.MoveTo(Vec2D(mPaddle.GetTopLeft().GetX() + (mPaddle.GetAARectangle().GetWidth() / 2), mPaddle.GetTopLeft().GetY() - (mBall.GetRadius() * 2)));
+    }
 }
 
 void BreakOut::SetToServe()
@@ -133,6 +202,19 @@ void BreakOut::NextLevel()
 
 void BreakOut::CreateControls(GameController &controller)
 {
+    ButtonAction escapeKeyAction;
+    escapeKeyAction.Key = GameController::Cancel();
+    escapeKeyAction.Action = [this](uint32_t dt, InputState state)
+    {
+        if (GameController::IsPressed(state))
+        {
+            if (mGameState == IN_GAME)
+            {
+                App::Singleton().PopScene();
+            }
+        }
+    };
+
     ButtonAction spaceKeyAction;
     spaceKeyAction.Key = GameController::Action();
     spaceKeyAction.Action = [this](uint32_t dt, InputState state)
@@ -153,7 +235,7 @@ void BreakOut::CreateControls(GameController &controller)
                 }
             }
         }
-        else if (mGameState == IN_GAME_OVER)
+        else if (mGameState == IN_GAME)
         {
             if (GameController::IsPressed(state))
             {
@@ -195,6 +277,7 @@ void BreakOut::CreateControls(GameController &controller)
             }
         }
     };
+    controller.AddInputActionForKey(escapeKeyAction);
     controller.AddInputActionForKey(spaceKeyAction);
     controller.AddInputActionForKey(LeftKeyAction);
     controller.AddInputActionForKey(RightKeyAction);

@@ -47,6 +47,10 @@ private:
     int mScreenWidth = 0;
     int mScreenHeight = 0;
 
+    int mTimeElapsed = 0;
+    bool mShowQuitMsg = false;
+    bool mMsgPaused = false;
+
     Ball mBall;
     BitmapFont mFont;
     BreakOutGameStates mGameState;
