@@ -94,9 +94,7 @@ void Screen::SetRenderColor(const Color &color)
         return;
     }
     mClearColor = color;
-    int val = SDL_SetRenderDrawColor(mRenderer, mClearColor.GetRed(), mClearColor.GetGreen(), mClearColor.GetBlue(), mClearColor.GetAlpha());
-
-    std::cout << val << std::endl;
+    SDL_SetRenderDrawColor(mRenderer, mClearColor.GetRed(), mClearColor.GetGreen(), mClearColor.GetBlue(), mClearColor.GetAlpha());
 }
 
 void Screen::SwapScreen()

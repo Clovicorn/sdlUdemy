@@ -7,6 +7,7 @@ void BreakOut::Init(GameController &controller)
 {
     mScreenWidth = App::Singleton().Width();
     mScreenHeight = App::Singleton().Height();
+    mFont = App::Singleton().GetFont();
     ResetGame();
     mBall.SetRadius(3.0f);
     mHighScores.Init(App::GetBasePath() + mHighScoreFile);
@@ -45,11 +46,11 @@ void BreakOut::Update(uint32_t dt)
             }
         }
     }
-    GetCurrentLevel().Update(dt, mBall);
+    GetCurrentLevel().Update(dt, mBall, &mHighScores);
     // This should update 3 times a Second!
-    if (cleanup == 20)
+    if (mCleanup == 20)
     {
-        cleanup = 0;
+        mCleanup = 0;
         if (GetCurrentLevel().IsLevelComplete())
         {
             NextLevel();
@@ -57,13 +58,21 @@ void BreakOut::Update(uint32_t dt)
     }
     else
     {
-        cleanup++;
+        mCleanup++;
     }
 }
 
 void BreakOut::Draw(Screen &screen)
 {
     mPaddle.Draw(screen);
+
+    std::string lives = "Lives " + to_string(mLives);
+    Vec2D livesPos(5, mScreenHeight - 15);
+    screen.Draw(mFont, lives, livesPos);
+
+    std::string scoreText = "Score " + mHighScores.GetScore();
+    Vec2D scorePos((mScreenWidth / 2) + 10, mScreenHeight - 15);
+    screen.Draw(mFont, scoreText, scorePos);
     GetCurrentLevel().Draw(screen);
     mBall.Draw(screen);
     AARectangle boundary = mLevelBoundary.GetRectangle();
@@ -84,9 +93,10 @@ void BreakOut::ResetGame()
 {
     mGameState = IN_SERVE;
     mLives = 3;
-    mLevels = BreakOutLevel::LoadLevelsFromFile(App::GetBasePath() + "assets/BreakoutLevels.txt", mScreenWidth, mScreenHeight);
     mCurrentLevel = 0;
-    mLevelBoundary = {AARectangle(Vec2D::Zero, mScreenWidth, mScreenHeight)};
+    mLevels = BreakOutLevel::LoadLevelsFromFile(App::GetBasePath() + "assets/BreakoutLevels.txt", mScreenWidth, mScreenHeight);
+    mHighScores.ResetScore();
+    mLevelBoundary = {AARectangle(Vec2D::Zero, mScreenWidth, mScreenHeight - 20)};
     AARectangle rect(Vec2D(mScreenWidth / 2 - Paddle::PADDLE_WIDTH / 2, mScreenHeight - 4 * Paddle::PADDLE_HEIGHT), Paddle::PADDLE_WIDTH, Paddle::PADDLE_HEIGHT);
     mLevels[mCurrentLevel].Init(mLevelBoundary.GetRectangle());
     mPaddle.Init(rect, mScreenWidth, mScreenHeight);

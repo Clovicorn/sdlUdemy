@@ -17,10 +17,6 @@ void HighScores::Draw(Screen &screen)
 void HighScores::Init(const std::string &pathToFile)
 {
     LoadScoreFile(pathToFile);
-    for (auto &score : mScores)
-    {
-        std::cout << score.name << " : " << score.score << std::endl;
-    }
 }
 
 void HighScores::Update(uint32_t dt)

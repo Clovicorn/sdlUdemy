@@ -10,6 +10,7 @@
 class Screen;
 class Ball;
 class LayoutBlock;
+class HighScore;
 
 class BreakOutLevel
 {
@@ -18,7 +19,7 @@ public:
     void Draw(Screen &screen);
     void Init(const AARectangle &boundary);
     void Load(const std::vector<Block> &blocks);
-    void Update(uint32_t dt, Ball &ball);
+    void Update(uint32_t dt, Ball &ball, HighScores *highScore);
     bool IsLevelComplete();
 
     static std::vector<BreakOutLevel> LoadLevelsFromFile(const std::string &filePath, int screenWidth, int screenHeight);

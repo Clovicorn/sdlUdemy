@@ -7,6 +7,7 @@
 class Screen;
 class AARectangle;
 class Ball;
+class HighScores;
 
 class Block : public Excluder
 {
@@ -15,7 +16,7 @@ public:
     void Init(const AARectangle &rect, int hp, const Color &outline, const Color &fill);
     void Draw(Screen &screen);
     void Bounce(Ball &ball, const BoundaryEdge &edge);
-    void ReduceHP();
+    void ReduceHP(HighScores *highScore);
 
     inline int GetHP() { return mHP; }
     inline bool IsDestroyed() const { return mHP == 0; }

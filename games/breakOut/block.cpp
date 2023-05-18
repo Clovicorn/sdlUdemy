@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include "ball.hpp"
+#include "highScores.hpp"
 #include "../../graphics/screen.hpp"
 
 void Block::Init(const AARectangle &rect, int hp, const Color &outline, const Color &fill)
@@ -23,7 +24,7 @@ void Block::Bounce(Ball &ball, const BoundaryEdge &edge)
     ball.Bounce(edge);
 }
 
-void Block::ReduceHP()
+void Block::ReduceHP(HighScores *highScore)
 {
     if (mHP > 0)
     {
@@ -31,6 +32,12 @@ void Block::ReduceHP()
         if (mHP > 0)
         {
             mFill.SetAlpha(255 - (255 / mHP));
+        }
+        if (mHP == 0)
+        {
+            // TODO Call UpdateScore()
+
+            highScore->UpdateScore();
         }
     }
 }

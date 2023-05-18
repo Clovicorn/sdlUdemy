@@ -1,53 +1,36 @@
 #include "arcadeScene.hpp"
-#include "scene.hpp"
+#include "gameScene.hpp"
+#include "notImplementedScene.hpp"
 #include "../app/app.hpp"
 #include "../utils/vec2d.hpp"
+#include "../games/breakOut/breakOut.hpp"
+#include "../games/tetris/tetris.hpp"
 #include "../graphics/bitmapFont.hpp"
+#include "../graphics/screen.hpp"
 #include "../shapes/aaRectangle.hpp"
 
-ArcadeScene::ArcadeScene()
+ArcadeScene::ArcadeScene() : ButtonOptionScene({"Asteroids", "BreakOut", "!pacman", "Tetris"}, Color::Magenta())
 {
 }
 
 void ArcadeScene::Init()
 {
-    ButtonAction action;
-    action.Key = GameController::Action();
-    action.Action = [](uint32_t dt, InputState state)
-    {
-        if (state)
-        {
-            std::cout << "Action key is pressed" << std::endl;
-        }
-        else
-        {
-            std::cout << "Action key is released" << std::endl;
-        }
-    };
-    mGameController.AddInputActionForKey(action);
-    MouseButtonAction mouseAction;
-    mouseAction.mouseButton = GameController::LeftMouseButton();
-    mouseAction.mouseAction = [](InputState state, MousePosition position)
-    {
-        if (state)
-        {
-            std::cout << "Left mouse button pressed." << std::endl;
-        }
-        else
-        {
-            std::cout << "Left mouse released" << std::endl;
-        }
-    };
-    mGameController.AddMouseButtonAction(mouseAction);
+    std::vector<Button::ButtonAction> actions;
+    actions.push_back([this]
+                      { App::Singleton().PushScene(GetScene(ASTEROIDS)); });
+    actions.push_back([this]
+                      { App::Singleton().PushScene(GetScene(BREAK_OUT)); });
+    actions.push_back([this]
+                      { App::Singleton().PushScene(GetScene(PAC_MAN)); });
+    actions.push_back([this]
+                      { App::Singleton().PushScene(GetScene(TETRIS)); });
+    SetButtonActions(actions);
+    ButtonOptionScene::Init();
 }
 
 void ArcadeScene::Draw(Screen &theScreen)
 {
-    Vec2D drawPoint(10, 10);
-    BitmapFont &font = App::Singleton().GetFont();
-    AARectangle rect(Vec2D::Zero, App::Singleton().Width(), App::Singleton().Height());
-    Vec2D textPos = font.GetDrawPosition(GetSceneName(), rect, BFXA_CENTER, BFYA_CENTER);
-    theScreen.Draw(font, GetSceneName(), textPos, Color::Red());
+    ButtonOptionScene::Draw(theScreen);
 }
 
 void ArcadeScene::Update(uint32_t dt)
@@ -65,10 +48,16 @@ std::unique_ptr<Scene> ArcadeScene::GetScene(eGame game)
     {
     case (TETRIS):
     {
+        std::unique_ptr<Tetris> tetris = std::make_unique<Tetris>();
+        std::unique_ptr<GameScene> tetrisGame = std::make_unique<GameScene>(std::move(tetris));
+        return tetrisGame;
     }
     break;
     case (BREAK_OUT):
     {
+        std::unique_ptr<BreakOut> breakout = std::make_unique<BreakOut>();
+        std::unique_ptr<GameScene> breakoutGame = std::make_unique<GameScene>(std::move(breakout));
+        return breakoutGame;
     }
     break;
     case (ASTEROIDS):
@@ -79,9 +68,7 @@ std::unique_ptr<Scene> ArcadeScene::GetScene(eGame game)
     {
     }
     break;
-    default:
-    {
     }
-    }
-    return nullptr;
+    std::unique_ptr<NotImplementedScene> notImplmented = std::make_unique<NotImplementedScene>();
+    return notImplmented;
 }

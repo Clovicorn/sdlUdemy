@@ -2,6 +2,7 @@
 
 #include "../scenes/arcadeScene.hpp"
 #include "../games/tetris/tetris.hpp"
+#include "../games/breakOut/breakOut.hpp"
 #include "../scenes/gameScene.hpp"
 
 App &App::Singleton()
@@ -21,15 +22,10 @@ bool App::Init(uint32_t width, uint32_t height, uint32_t mag)
     if (mWindow)
     {
         SetFPS(mFPS);
-        std::unique_ptr<ArcadeScene>
-            arcadeScene = std::make_unique<ArcadeScene>();
-        PushScene(std::move(arcadeScene));
-        /* Temp Section*/
-        std::unique_ptr<Tetris> tetris = std::make_unique<Tetris>();
-        std::unique_ptr<GameScene> tetrisGame = std::make_unique<GameScene>(std::move(tetris));
-        PushScene(std::move(tetrisGame));
 
-        /* */
+        std::unique_ptr<ArcadeScene> arcadeScene = std::make_unique<ArcadeScene>();
+
+        PushScene(std::move(arcadeScene));
     }
 
     return mWindow != nullptr;

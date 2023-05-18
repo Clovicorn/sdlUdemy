@@ -21,7 +21,7 @@ void Ball::Bounce(const BoundaryEdge &edge)
 void Ball::Draw(Screen &screen)
 {
     Circle circle(mBBox.GetCenterPoint(), GetRadius());
-    screen.Draw(circle, Color::Yellow(), true, Color::Yellow());
+    screen.Draw(circle, Color::Magenta(), true, Color::Magenta());
 }
 
 void Ball::MakeFlushWithEdge(const BoundaryEdge &edge, Vec2D &pointOnEdge, bool limitToEdge)

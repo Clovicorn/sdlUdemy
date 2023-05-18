@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "scene.hpp"
+#include "buttonOptionScene.hpp"
 
 class App;
 class Vec2D;
@@ -17,7 +17,7 @@ enum eGame
     NUM_GAMES
 };
 
-class ArcadeScene : public Scene
+class ArcadeScene : public ButtonOptionScene
 {
 public:
     ArcadeScene();

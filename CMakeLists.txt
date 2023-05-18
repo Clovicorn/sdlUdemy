@@ -10,6 +10,7 @@ add_executable(arcadeApp
 main.cpp
 
 app/app.cpp
+app/button.cpp
 
 games/breakOut/ball.cpp
 games/breakOut/block.cpp
@@ -37,7 +38,9 @@ input/gameController.cpp
 input/inputController.cpp
 
 scenes/arcadeScene.cpp
+scenes/buttonOptionScene.cpp
 scenes/gameScene.cpp
+scenes/notImplementedScene.cpp
 
 shapes/aaRectangle.cpp
 shapes/circle.cpp

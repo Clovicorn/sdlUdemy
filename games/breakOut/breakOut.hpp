@@ -10,6 +10,7 @@
 #include "paddle.hpp"
 #include "breakOutLevel.hpp"
 #include "highScores.hpp"
+#include "../../graphics/bitmapFont.hpp"
 
 class GameController;
 class App;
@@ -35,20 +36,25 @@ private:
     void SetToServe();
     void NextLevel();
     void CreateControls(GameController &controller);
-    BreakOutLevel &GetCurrentLevel() { return mLevels[mCurrentLevel]; }
-    Ball mBall;
-    HighScores mHighScores;
+
     std::string mHighScoreFile = "assets/HighScores.txt";
+
     const float INITIAL_BALL_SPEED = 100.0f;
-    LevelBoundary mLevelBoundary;
-    Paddle mPaddle;
-    int cleanup = 0;
+    int mCleanup = 0;
+    size_t mCurrentLevel = 0;
+    int mLives = 3;
+    int score = 0;
     int mScreenWidth = 0;
     int mScreenHeight = 0;
-    size_t mCurrentLevel = 0;
-    std::vector<BreakOutLevel> mLevels;
+
+    Ball mBall;
+    BitmapFont mFont;
     BreakOutGameStates mGameState;
-    int mLives = 3;
+    BreakOutLevel &GetCurrentLevel() { return mLevels[mCurrentLevel]; }
+    HighScores mHighScores;
+    LevelBoundary mLevelBoundary;
+    std::vector<BreakOutLevel> mLevels;
+    Paddle mPaddle;
 };
 
 #endif /* BREAKOUT_H */
