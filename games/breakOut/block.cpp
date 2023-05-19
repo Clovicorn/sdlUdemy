@@ -1,8 +1,7 @@
 #include "block.hpp"
-
+#include "breakout.hpp"
 #include <algorithm>
 #include "ball.hpp"
-#include "highScores.hpp"
 #include "../../graphics/screen.hpp"
 
 void Block::Init(const AARectangle &rect, int hp, const Color &outline, const Color &fill)
@@ -24,7 +23,7 @@ void Block::Bounce(Ball &ball, const BoundaryEdge &edge)
     ball.Bounce(edge);
 }
 
-void Block::ReduceHP(HighScores *highScore)
+bool Block::ReduceHP()
 {
     if (mHP > 0)
     {
@@ -37,7 +36,8 @@ void Block::ReduceHP(HighScores *highScore)
         {
             // TODO Call UpdateScore()
 
-            highScore->UpdateScore();
+            return true;
         }
     }
+    return false;
 }

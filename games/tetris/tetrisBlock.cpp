@@ -59,7 +59,6 @@ bool TetrisBlock::CheckForCollision(const AARectangle &rect, BlockSide side)
     {
         if ((mRect.GetBottomRight().GetY() + mSize) >= rect.GetTopLeft().GetY())
         {
-            std::cout << "did collide" << std::endl;
             return true;
         }
     }

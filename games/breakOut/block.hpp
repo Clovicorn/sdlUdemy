@@ -16,7 +16,7 @@ public:
     void Init(const AARectangle &rect, int hp, const Color &outline, const Color &fill);
     void Draw(Screen &screen);
     void Bounce(Ball &ball, const BoundaryEdge &edge);
-    void ReduceHP(HighScores *highScore);
+    bool ReduceHP();
 
     inline int GetHP() { return mHP; }
     inline bool IsDestroyed() const { return mHP == 0; }

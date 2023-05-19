@@ -26,8 +26,12 @@ public:
     inline float GetRadius() { return mBBox.GetWidth() / 2.0f; }
     inline Vec2D GetPosition() { return mBBox.GetCenterPoint(); }
     inline void SetVelocity(const Vec2D &velocity) { mVelocity = velocity; }
+    inline void UpdateScore(int amount) { mScore += amount; }
+    inline int GetScore() { return mScore; }
+    inline void ResetScore() { mScore = 0; }
 
 private:
+    int mScore = 0;
     AARectangle mBBox;
     Vec2D mVelocity;
     const float RADIUS = 5.0f;

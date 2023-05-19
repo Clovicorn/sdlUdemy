@@ -32,7 +32,7 @@ void BreakOutLevel::Load(const std::vector<Block> &blocks)
     mBlocks = blocks;
 }
 
-void BreakOutLevel::Update(uint32_t dt, Ball &ball, HighScores *highScore)
+void BreakOutLevel::Update(uint32_t dt, Ball &ball)
 {
     std::vector<Block> collidedBlocks;
     BoundaryEdge edgeToBounceOff;
@@ -59,8 +59,13 @@ void BreakOutLevel::Update(uint32_t dt, Ball &ball, HighScores *highScore)
     }
     if (ptrBlockToBounceOff != nullptr)
     {
+        bool isDestroyed = false;
         ptrBlockToBounceOff->Bounce(ball, edgeToBounceOff);
-        ptrBlockToBounceOff->ReduceHP(highScore);
+        isDestroyed = ptrBlockToBounceOff->ReduceHP();
+        if (isDestroyed)
+        {
+            ball.UpdateScore(10);
+        }
     }
     for (auto &block : collidedBlocks)
     {
@@ -80,7 +85,6 @@ void BreakOutLevel::CreateDefaultLevel(const AARectangle &boundary)
     mBlocks.clear();
 
     const int NUM_BLOCKS_ACROSS = (((int)boundary.GetWidth() - ((BLOCK_WIDTH))) / BLOCK_WIDTH);
-    std::cout << NUM_BLOCKS_ACROSS << std::endl;
     const int NUM_BLOCK_ROWS = 6;
     float startX = ((int)boundary.GetWidth() - (NUM_BLOCKS_ACROSS * (BLOCK_WIDTH + 1))) / 2;
 

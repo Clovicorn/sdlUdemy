@@ -15,7 +15,7 @@ bool FileCommandLoader::LoadFile(const std::string &filePath)
     inFile.open(filePath);
     if (!inFile.is_open())
     {
-        std::cout << "Faild to open file: " << filePath << std::endl;
+        std::cout << "Failed to open file: " << filePath << std::endl;
         return false;
     }
 

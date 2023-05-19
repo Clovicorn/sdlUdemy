@@ -9,7 +9,7 @@
 #include "levelBoundary.hpp"
 #include "paddle.hpp"
 #include "breakOutLevel.hpp"
-#include "highScores.hpp"
+#include "../highScores.hpp"
 #include "../../graphics/bitmapFont.hpp"
 
 class GameController;
@@ -19,8 +19,10 @@ enum BreakOutGameStates
 {
     IN_PLAY = 0,
     IN_SERVE,
-    IN_GAME,
-    IN_GAME_OVER
+    IN_GAME_TITLE,
+    IN_GAME_OVER,
+    IN_GAME_SCORES,
+    IN_GAME_ADD_SCORE
 };
 
 class BreakOut : public Game
@@ -34,6 +36,7 @@ public:
 private:
     void ResetGame();
     void SetToServe();
+    void GameOver();
     void NextLevel();
     void CreateControls(GameController &controller);
 
@@ -43,12 +46,13 @@ private:
     int mCleanup = 0;
     size_t mCurrentLevel = 0;
     int mLives = 3;
-    int score = 0;
     int mScreenWidth = 0;
     int mScreenHeight = 0;
 
     int mTimeElapsed = 0;
+    int mShowMsgLoop = 0;
     bool mShowQuitMsg = false;
+    bool mShowHighScore = false;
     bool mMsgPaused = false;
 
     Ball mBall;
