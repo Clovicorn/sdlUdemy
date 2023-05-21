@@ -27,6 +27,9 @@ games/tetris/tetris.cpp
 games/tetris/tetrisBlock.cpp
 games/tetris/tetrisShape.cpp
 
+graphics/animatedSprite.cpp
+graphics/animation.cpp
+graphics/animationPlayer.cpp
 graphics/bitmapFont.cpp
 graphics/bmpImage.cpp
 graphics/color.cpp

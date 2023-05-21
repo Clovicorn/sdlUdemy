@@ -50,9 +50,10 @@ SDL_Window *Screen::Init(uint32_t w, uint32_t h, uint32_t mag, bool fast)
         return nullptr;
     }
 
-    mWindow = SDL_CreateWindow("Arcade", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mWidth * mag, mHeight * mag, 0);
+    mWindow = SDL_CreateWindow("Arcade", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mWidth * mag, mHeight * mag, SDL_WINDOW_OPENGL);
     if (mWindow)
     {
+
         uint8_t rClear = 0;
         uint8_t gClear = 0;
         uint8_t bClear = 0;
@@ -69,11 +70,13 @@ SDL_Window *Screen::Init(uint32_t w, uint32_t h, uint32_t mag, bool fast)
             {
                 SDL_SetRenderDrawColor(mRenderer, rClear, gClear, bClear, aClear);
                 mPixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888);
+
                 mTexture = SDL_CreateTexture(mRenderer, mPixelFormat->format, SDL_TEXTUREACCESS_STREAMING, mWidth, mHeight);
             }
         }
         if (!mFast)
         {
+            std::cout << "using Surface and not renderer." << std::endl;
             mSurface = SDL_GetWindowSurface(mWindow);
             mPixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888);
         }
@@ -281,7 +284,7 @@ void Screen::Draw(Circle &circle, const Color &color, bool fill, const Color &fi
     }
 }
 
-void Screen::Draw(BMPImage &image, Sprite &sprite, Vec2D &pos, const Color &overlayColor, float mag)
+void Screen::Draw(const BMPImage &image, const Sprite &sprite, const Vec2D &pos, const Color &overlayColor)
 {
     uint32_t width = sprite.width;
     uint32_t height = sprite.height;
@@ -293,9 +296,9 @@ void Screen::Draw(BMPImage &image, Sprite &sprite, Vec2D &pos, const Color &over
 
     const std::vector<Color> &pixels = image.GetPixels();
     Vec2D topLeft = pos;
-    Vec2D topRight = pos + Vec2D(width * mag, 0);
-    Vec2D bottomLeft = pos + Vec2D(0, height * mag);
-    Vec2D bottomRight = pos + Vec2D(width * mag, height * mag);
+    Vec2D topRight = pos + Vec2D(width, 0);
+    Vec2D bottomLeft = pos + Vec2D(0, height);
+    Vec2D bottomRight = pos + Vec2D(width, height);
 
     std::vector<Vec2D> points = {topLeft, bottomLeft, bottomRight, topRight};
     Vec2D xAxis = topRight - topLeft;
@@ -305,7 +308,7 @@ void Screen::Draw(BMPImage &image, Sprite &sprite, Vec2D &pos, const Color &over
     const float invYAxisLenSq = 1.0f / yAxis.Mag2();
 
     FillPoly(points, [&](uint32_t px, uint32_t py)
-             { Vec2D p(px, py);
+             { Vec2D p(static_cast<float>(px), static_cast<float>(py));
         Vec2D d = p - topLeft;
         float u = invXAxisLenSq * d.Dot(xAxis);
         float v = invYAxisLenSq * d.Dot(yAxis);
@@ -316,22 +319,26 @@ void Screen::Draw(BMPImage &image, Sprite &sprite, Vec2D &pos, const Color &over
         float tx = roundf(u * static_cast<float>(sprite.width));
         float ty = roundf(v * static_cast<float>(sprite.height));
 
-        Color pixelColor = image.GetPixels()[GetIndex(image.GetWidth(), ty + sprite.yPos, tx + sprite.xPos)];
-        Color newPixelColor = {static_cast<uint8_t>(pixelColor.GetRed() * rVal), static_cast<uint8_t>(pixelColor.GetGreen() * gVal), static_cast<uint8_t>(pixelColor.GetBlue() * bVal), static_cast<uint8_t>(pixelColor.GetAlpha() * aVal)};
+        // Testing alpha as 255^
+        // Still need to figure out why not working for colors
+        // works on white textBMP just not colored BMP
+        const Color pixelColor = image.GetPixels()[GetIndex(image.GetWidth(), ty + sprite.yPos, tx + sprite.xPos)];
 
+        Color newPixelColor = {static_cast<uint8_t>(pixelColor.GetRed() * rVal), static_cast<uint8_t>(pixelColor.GetGreen() * gVal), static_cast<uint8_t>(pixelColor.GetBlue() * bVal), static_cast<uint8_t>(pixelColor.GetAlpha() * aVal)};
+        
         return newPixelColor; });
 }
 
-void Screen::Draw(SpriteSheet &ss, const std::string &spriteName, Vec2D &pos, const Color &overlayColor, float mag)
+void Screen::Draw(const SpriteSheet &ss, const std::string &spriteName, const Vec2D &pos, const Color &overlayColor)
 {
-    Sprite sprite = ss.GetSprite(spriteName);
-    Draw(ss.GetBMPImage(), sprite, pos, overlayColor, mag);
+    const Sprite sprite = ss.GetSprite(spriteName);
+    Draw(ss.GetBMPImage(), sprite, pos, overlayColor);
 }
 
-void Screen::Draw(BitmapFont &font, const std::string &text, Vec2D &pos, const Color &overlayColor, float mag)
+void Screen::Draw(const BitmapFont &font, const std::string &text, const Vec2D &pos, const Color &overlayColor)
 {
     uint32_t xPos = pos.GetX();
-    SpriteSheet &ss = font.GetFontSheet();
+    const SpriteSheet &ss = font.GetFontSheet();
 
     for (char c : text)
     {
@@ -342,7 +349,7 @@ void Screen::Draw(BitmapFont &font, const std::string &text, Vec2D &pos, const C
         }
         Sprite sprite = ss.GetSprite(std::string("") + c);
         Vec2D newPos(xPos, pos.GetY());
-        Draw(ss.GetBMPImage(), sprite, newPos, overlayColor, mag);
+        Draw(ss.GetBMPImage(), sprite, newPos, overlayColor);
         xPos += sprite.width;
         xPos += font.GetFontSpacingBetweenLetters();
     }

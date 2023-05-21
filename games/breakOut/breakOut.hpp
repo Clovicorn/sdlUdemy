@@ -28,6 +28,7 @@ enum BreakOutGameStates
 class BreakOut : public Game
 {
 public:
+    ~BreakOut();
     virtual void Init(GameController &controller) override;
     virtual void Update(uint32_t dt) override;
     virtual void Draw(Screen &screen) override;
@@ -40,7 +41,7 @@ private:
     void NextLevel();
     void CreateControls(GameController &controller);
 
-    std::string mHighScoreFile = "assets/HighScores.txt";
+    std::string mHighScoreFile = "assets/BreakoutHighScores.txt";
 
     const float INITIAL_BALL_SPEED = 100.0f;
     int mCleanup = 0;

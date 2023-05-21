@@ -28,7 +28,7 @@ public:
     inline void SetVelocity(const Vec2D &velocity) { mVelocity = velocity; }
     inline void UpdateScore(int amount) { mScore += amount; }
     inline int GetScore() { return mScore; }
-    inline void ResetScore() { mScore = 0; }
+    inline void ResetScore() { mScore = 2000; }
 
 private:
     int mScore = 0;

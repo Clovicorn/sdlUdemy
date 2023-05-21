@@ -14,9 +14,9 @@ public:
     BMPImage();
     bool Load(const std::string &path);
 
-    inline std::vector<Color> &GetPixels() { return mPixels; }
-    inline uint32_t GetWidth() { return mWidth; }
-    inline uint32_t GetHeight() { return mHeight; }
+    inline const std::vector<Color> &GetPixels() const { return mPixels; }
+    inline const uint32_t GetWidth() const { return mWidth; }
+    inline const uint32_t GetHeight() const { return mHeight; }
 
 private:
     std::vector<Color> mPixels;

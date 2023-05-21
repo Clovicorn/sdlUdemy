@@ -1,4 +1,5 @@
 #include "bmpImage.hpp"
+#include <iostream>
 
 BMPImage::BMPImage() : mWidth(0), mHeight(0)
 {
@@ -6,10 +7,17 @@ BMPImage::BMPImage() : mWidth(0), mHeight(0)
 
 bool BMPImage::Load(const std::string &path)
 {
+
     SDL_Surface *bmpSurface = SDL_LoadBMP(path.c_str());
+
+    //
     if (bmpSurface == nullptr)
     {
         return false;
+    }
+    if (bmpSurface->format->format != SDL_PIXELFORMAT_RGBA8888)
+    {
+        bmpSurface = SDL_ConvertSurfaceFormat(bmpSurface, SDL_PIXELFORMAT_RGBA8888, 0);
     }
 
     mWidth = bmpSurface->w;

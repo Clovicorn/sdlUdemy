@@ -29,7 +29,7 @@ public:
     bool Load(const std::string &filePath);
     Size GetSizeOf(const std::string &str);
     Vec2D GetDrawPosition(const std::string &str, const AARectangle &box, FontXAlign xAlign = BFXA_LEFT, FontYAlign yAlign = BFYA_BOTTOM);
-    inline SpriteSheet &GetFontSheet() { return mFontSheet; }
+    inline const SpriteSheet &GetFontSheet() const { return mFontSheet; }
     inline const uint32_t GetFontSpacingBetweenLetters() const { return 2; }
     inline const uint32_t GetFontSpacingBetweenWords() const { return 5; }
 

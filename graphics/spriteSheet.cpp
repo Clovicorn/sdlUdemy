@@ -12,8 +12,15 @@ bool SpriteSheet::Load(const std::string &name)
     std::string txtName = App::Singleton().GetBasePath() + "assets/" + name + ".txt";
 
     bool loadBMPImage = mBMPImage.Load(bmpName);
+    if (!loadBMPImage)
+    {
+        std::cout << "Failed to load BMP image in SpriteSheet" << std::endl;
+    }
     bool loadSpriteSection = LoadSpriteSections(txtName);
-
+    if (!loadSpriteSection)
+    {
+        std::cout << "Failed to load Sprite sections in SpriteSheet" << std::endl;
+    }
     return loadBMPImage && loadSpriteSection;
 }
 

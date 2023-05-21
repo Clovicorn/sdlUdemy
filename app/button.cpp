@@ -12,12 +12,15 @@ void Button::Init(const AARectangle &bBox)
 
 void Button::Draw(Screen &screen)
 {
+    Vec2D pos = mBitmapFont.GetDrawPosition(mText, mBBox, BFXA_CENTER, BFYA_CENTER);
     if (IsHighlighted())
     {
-        screen.Draw(mBBox, mHighlightColor);
+        screen.Draw(mBitmapFont, mText, pos, mTextColor);
     }
-    Vec2D pos = mBitmapFont.GetDrawPosition(mText, mBBox, BFXA_CENTER, BFYA_CENTER);
-    screen.Draw(mBitmapFont, mText, pos);
+    else
+    {
+        screen.Draw(mBitmapFont, mText, pos);
+    }
 }
 
 void Button::ExecuteAction()

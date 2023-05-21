@@ -6,26 +6,62 @@
 #include <stdlib.h>
 #include "../../app/app.hpp"
 #include "../../input/gameController.hpp"
-
+// TODO Fix game over to allow adding score to high scores
+//  insteaad of going back to main screen.
 Tetris::~Tetris()
 {
     App::Singleton().SetRendererClearColor(Color::Black());
 }
 void Tetris::Draw(Screen &screen)
 {
-    AARectangle scoreRect(Vec2D(mNextShapeBorder.GetTopLeft().GetX(), mNextShapeBorder.GetTopLeft().GetY() + 150), mNextShapeBorder.GetWidth(), 20);
-    Vec2D nextPos(mNextShapeBorder.GetTopLeft().GetX() + 20, mNextShapeBorder.GetTopLeft().GetY() - 10);
-    Vec2D scorePos(scoreRect.GetTopLeft().GetX() + 15, scoreRect.GetTopLeft().GetY() - 10);
-    screen.Draw(mBorder, Color::White(), true, Color::Black());
-    screen.Draw(mNextShapeBorder, Color::White(), true, Color::Black());
-    std::string scoreText = to_string(mScore);
-    screen.Draw(scoreRect, Color::White(), true, Color::Black());
-    Vec2D scoreTextPos = mFont.GetDrawPosition(scoreText, scoreRect, BFXA_CENTER, BFYA_CENTER);
-    screen.Draw(mFont, std::string("Next:"), nextPos, Color::White());
-    screen.Draw(mFont, std::string("Score"), scorePos, Color::White());
-    screen.Draw(mFont, scoreText, scoreTextPos, Color::White());
+    if (mGameState == TETRIS_GAME_OVER)
+    {
+        AARectangle rect(Vec2D::Zero, mScreenWidth, mScreenHeight);
+        std::string gameOver = "Game Over!";
+        Vec2D pos(mFont.GetDrawPosition(gameOver, rect, BFXA_CENTER, BFYA_CENTER));
+        screen.Draw(mFont, gameOver, pos);
+    }
+    if (mGameState == TETRIS_TITLE)
+    {
+        AARectangle rect(Vec2D::Zero, mScreenWidth, mScreenHeight / 2);
+        std::string breakoutText = "TETRIS";
+        Vec2D pos(mFont.GetDrawPosition(breakoutText, rect, BFXA_CENTER, BFYA_CENTER));
+        screen.Draw(mFont, breakoutText, pos, Color::Red());
+        if (!mMsgPaused)
+        {
+            AARectangle rect2(Vec2D(0, mScreenHeight / 2), mScreenWidth, mScreenHeight / 2);
+            if (mShowQuitMsg)
+            {
+                std::string quitText = "Press Escape to quit.";
+                Vec2D quitPos(mFont.GetDrawPosition(quitText, rect2, BFXA_CENTER, BFYA_CENTER));
+                screen.Draw(mFont, quitText, quitPos);
+            }
+            else
+            {
+                std::string spaceText = "Press Space to play.";
+                Vec2D playPos(mFont.GetDrawPosition(spaceText, rect2, BFXA_CENTER, BFYA_CENTER));
+                screen.Draw(mFont, spaceText, playPos);
+            }
+        }
+    }
+    if (mGameState == TETRIS_SCORES)
+    {
+        mHighScores.Draw(screen);
+    }
+
     if (mGameState == TETRIS_PLAYING)
     {
+        AARectangle scoreRect(Vec2D(mNextShapeBorder.GetTopLeft().GetX(), mNextShapeBorder.GetTopLeft().GetY() + 150), mNextShapeBorder.GetWidth(), 20);
+        Vec2D nextPos(mNextShapeBorder.GetTopLeft().GetX() + 20, mNextShapeBorder.GetTopLeft().GetY() - 10);
+        Vec2D scorePos(scoreRect.GetTopLeft().GetX() + 15, scoreRect.GetTopLeft().GetY() - 10);
+        screen.Draw(mBorder, Color::White(), true, Color::Black());
+        screen.Draw(mNextShapeBorder, Color::White(), true, Color::Black());
+        std::string scoreText = to_string(mScore);
+        screen.Draw(scoreRect, Color::White(), true, Color::Black());
+        Vec2D scoreTextPos = mFont.GetDrawPosition(scoreText, scoreRect, BFXA_CENTER, BFYA_CENTER);
+        screen.Draw(mFont, std::string("Next:"), nextPos, Color::White());
+        screen.Draw(mFont, std::string("Score"), scorePos, Color::White());
+        screen.Draw(mFont, scoreText, scoreTextPos, Color::White());
         for (auto &block : mCurrentShape.GetBlocks())
         {
             if (block.GetAARectangle().GetTopLeft().GetY() > mBorder.GetTopLeft().GetY())
@@ -48,6 +84,7 @@ void Tetris::Init(GameController &controller)
     mScreenWidth = App::Singleton().Width();
     mScreenHeight = App::Singleton().Height();
     mFont = App::Singleton().GetFont();
+    mHighScores.Init(App::Singleton().GetBasePath() + mHighScoresFile);
     Color renderColor(100, 100, 100, 255);
     App::Singleton().SetRendererClearColor(renderColor);
     CreateControls(controller);
@@ -67,6 +104,60 @@ void Tetris::Init(GameController &controller)
 
 void Tetris::Update(uint32_t dt)
 {
+    if (mGameState == TETRIS_GAME_OVER)
+    {
+        if (mTimeElapsed == 120)
+        {
+            mGameState = TETRIS_TITLE;
+            mTimeElapsed = 0;
+        }
+        else
+        {
+            mTimeElapsed += 1;
+        }
+    }
+    if (mGameState == TETRIS_TITLE)
+    {
+        if (mTimeElapsed == 45 && !mMsgPaused)
+        {
+            mShowQuitMsg = !mShowQuitMsg;
+            mMsgPaused = true;
+            mTimeElapsed = 0;
+            if (mShowMsgLoop == 4)
+            {
+                mGameState = TETRIS_SCORES;
+                mShowMsgLoop = 0;
+            }
+            else
+            {
+                mShowMsgLoop++;
+            }
+        }
+        else if (mTimeElapsed == 20 && mMsgPaused)
+        {
+            mMsgPaused = false;
+            mTimeElapsed = 0;
+        }
+        else
+        {
+            mTimeElapsed += 1;
+        }
+    }
+    if (mGameState == TETRIS_SCORES)
+    {
+        if (mHighScores.GetScoreState() == SCORE_SHOW)
+        {
+            if (mTimeElapsed == 300)
+            {
+                mGameState = TETRIS_TITLE;
+                mTimeElapsed = 0;
+            }
+            else
+            {
+                mTimeElapsed += 1;
+            }
+        }
+    }
     if (mGameState == TETRIS_PLAYING)
     {
         if (mAmountBetweenUpdate >= mSpeed)
@@ -215,6 +306,10 @@ void Tetris::CreateControls(GameController &controller)
                     }
                 }
             }
+            if (mGameState == TETRIS_SCORES && mHighScores.GetScoreState() == SCORE_UPDATE)
+            {
+                mHighScores.SetPreviousLetter();
+            }
         }
     };
 
@@ -232,6 +327,10 @@ void Tetris::CreateControls(GameController &controller)
                     mCurrentShape.MoveRight();
                 }
             }
+        }
+        if (mGameState == TETRIS_SCORES && mHighScores.GetScoreState() == SCORE_UPDATE)
+        {
+            mHighScores.MoveRight();
         }
     };
     ButtonAction downKeyAction;
@@ -253,6 +352,10 @@ void Tetris::CreateControls(GameController &controller)
                 }
             }
         }
+        if (mGameState == TETRIS_SCORES && mHighScores.GetScoreState() == SCORE_UPDATE)
+        {
+            mHighScores.SetNextLetter();
+        }
     };
 
     ButtonAction leftKeyAction;
@@ -269,6 +372,10 @@ void Tetris::CreateControls(GameController &controller)
                 }
             }
         }
+        if (mGameState == TETRIS_SCORES && mHighScores.GetScoreState() == SCORE_UPDATE)
+        {
+            mHighScores.MoveLeft();
+        }
     };
 
     ButtonAction spaceKeyAction;
@@ -277,9 +384,13 @@ void Tetris::CreateControls(GameController &controller)
     {
         if (GameController::IsPressed(state))
         {
-            if (mGameState == TETRIS_NOT_STARTED)
+            if (mGameState == TETRIS_TITLE)
             {
                 StartGame();
+            }
+            if (mGameState == TETRIS_SCORES && mHighScores.GetScoreState() == SCORE_UPDATE)
+            {
+                mHighScores.AcceptName(mScore);
             }
         }
     };
@@ -298,6 +409,10 @@ void Tetris::CreateControls(GameController &controller)
             else if (mGameState == TETRIS_PAUSED)
             {
                 mGameState = TETRIS_PLAYING;
+            }
+            if (mGameState == TETRIS_TITLE)
+            {
+                App::Singleton().PopScene();
             }
         }
     };
@@ -449,7 +564,17 @@ void Tetris::IsGameOver()
                     if (block.GetAARectangle().GetTopLeft().GetY() <= minY && (minX <= block.GetAARectangle().GetTopLeft().GetX() <= maxX))
                     {
                         // mBlocks.clear();
-                        mGameState = TETRIS_NOT_STARTED;
+                        bool isScoreHighScore = mHighScores.CheckScore(mScore);
+                        if (isScoreHighScore)
+                        {
+                            mHighScores.SetScoreState(SCORE_UPDATE);
+                            mGameState = TETRIS_SCORES;
+                        }
+                        else
+                        {
+                            mGameState = TETRIS_GAME_OVER;
+                        }
+
                         break;
                     }
                 }
@@ -460,7 +585,7 @@ void Tetris::IsGameOver()
 
 void Tetris::StartGame()
 {
-    if (mGameState == TETRIS_NOT_STARTED)
+    if (mGameState == TETRIS_TITLE)
     {
         mGameState = TETRIS_PLAYING;
         mBlocks.clear();

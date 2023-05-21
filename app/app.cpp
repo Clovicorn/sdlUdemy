@@ -57,6 +57,7 @@ void App::PopScene()
 {
     if (mScenes.size() > 1)
     {
+        mScenes.back().~unique_ptr();
         mScenes.pop_back();
     }
     if (CurrentScene())

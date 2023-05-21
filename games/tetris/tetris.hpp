@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../game.hpp"
+#include "../highScores.hpp"
 #include "../../shapes/aaRectangle.hpp"
 #include "../../graphics/bitmapFont.hpp"
 #include "tetrisBlock.hpp"
@@ -18,9 +19,10 @@ enum BoardSides
 
 enum TetrisGameState
 {
-    TETRIS_NOT_STARTED = 0,
+    TETRIS_TITLE = 0,
     TETRIS_PLAYING,
     TETRIS_GAME_OVER,
+    TETRIS_SCORES,
     TETRIS_PAUSED,
 };
 
@@ -59,9 +61,15 @@ private:
 
     int mScore = 0;
 
+    std::string mHighScoresFile = "assets\\TetrisHighScores.txt";
+    int mTimeElapsed = 0;
+    bool mShowQuitMsg = false;
+    bool mMsgPaused = false;
+    int mShowMsgLoop = 0;
+
     int mSpeed = 0;
-    int mSpeedUp = 50;
-    int mMaxSpeed = 2;
+    int mSpeedUp = 60;
+    int mMaxSpeed = 7;
     int mTotalRowsCompleted = 0;
     int mAmountBetweenUpdate = 0;
     unsigned int mBlockSize = 12;
@@ -69,12 +77,13 @@ private:
     int rows[20] = {0};
     int columns[10] = {0};
 
-    TetrisGameState mGameState = TETRIS_NOT_STARTED;
+    TetrisGameState mGameState = TETRIS_TITLE;
     TetrisShape mNextShape;
     TetrisShape mCurrentShape;
     AARectangle mBorder;
     AARectangle mNextShapeBorder;
     BitmapFont mFont;
+    HighScores mHighScores;
 };
 
 #endif /* TETRIS_H */

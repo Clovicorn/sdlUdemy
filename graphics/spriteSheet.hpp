@@ -27,9 +27,9 @@ public:
 
     std::vector<std::string> GetSpriteNames() const;
 
-    inline BMPImage &GetBMPImage() { return mBMPImage; }
-    inline uint32_t GetWidth() { return mBMPImage.GetWidth(); }
-    inline uint32_t GetHeight() { return mBMPImage.GetHeight(); }
+    inline const BMPImage &GetBMPImage() const { return mBMPImage; }
+    inline const uint32_t GetWidth() const { return mBMPImage.GetWidth(); }
+    inline const uint32_t GetHeight() const { return mBMPImage.GetHeight(); }
 
 private:
     bool LoadSpriteSections(const std::string path);

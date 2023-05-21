@@ -3,9 +3,9 @@
 #include "../../app/app.hpp"
 #include "../../input/gameController.hpp"
 
-// TODO Setup GameOver to check if score is good enough to
-// add to the high score list.  If so then run highScore system
-// to allow adding intials to list.  Then show high score list
+BreakOut::~BreakOut()
+{
+}
 
 void BreakOut::Init(GameController &controller)
 {
@@ -232,8 +232,8 @@ void BreakOut::GameOver()
     bool madeHighScoreList = mHighScores.CheckScore(mBall.GetScore());
     if (madeHighScoreList)
     {
-        // mHighScores.SetScoreState(SCORE_UPDATE);
-        // mGameState = IN_GAME_SCORES;
+        mHighScores.SetScoreState(SCORE_UPDATE);
+        mGameState = IN_GAME_SCORES;
     }
 }
 
@@ -290,6 +290,10 @@ void BreakOut::CreateControls(GameController &controller)
                 ResetGame();
             }
         }
+        else if (mGameState == IN_GAME_SCORES && mHighScores.GetScoreState() == SCORE_UPDATE)
+        {
+            mHighScores.AcceptName(mBall.GetScore());
+        }
     };
 
     ButtonAction LeftKeyAction;
@@ -305,6 +309,13 @@ void BreakOut::CreateControls(GameController &controller)
             else
             {
                 mPaddle.UnsetMovementDirection(PaddleDirection::LEFT_MOVE);
+            }
+        }
+        else if (mGameState == IN_GAME_SCORES && mHighScores.GetScoreState() == SCORE_UPDATE)
+        {
+            if (GameController::IsPressed(state))
+            {
+                mHighScores.MoveLeft();
             }
         }
     };
@@ -324,9 +335,45 @@ void BreakOut::CreateControls(GameController &controller)
                 mPaddle.UnsetMovementDirection(PaddleDirection::RIGHT_MOVE);
             }
         }
+        else if (mGameState == IN_GAME_SCORES && mHighScores.GetScoreState() == SCORE_UPDATE)
+        {
+            if (GameController::IsPressed(state))
+            {
+                mHighScores.MoveRight();
+            }
+        }
     };
+
+    ButtonAction UpKeyAction;
+    UpKeyAction.Key = GameController::Up();
+    UpKeyAction.Action = [this](uint32_t dt, InputState state)
+    {
+        if (GameController::IsPressed(state))
+        {
+            if (mGameState == IN_GAME_SCORES && mHighScores.GetScoreState() == SCORE_UPDATE)
+            {
+                mHighScores.SetPreviousLetter();
+            }
+        }
+    };
+
+    ButtonAction DownKeyAction;
+    DownKeyAction.Key = GameController::Down();
+    DownKeyAction.Action = [this](uint32_t dt, InputState state)
+    {
+        if (GameController::IsPressed(state))
+        {
+            if (mGameState == IN_GAME_SCORES && mHighScores.GetScoreState() == SCORE_UPDATE)
+            {
+                mHighScores.SetNextLetter();
+            }
+        }
+    };
+
     controller.AddInputActionForKey(escapeKeyAction);
     controller.AddInputActionForKey(spaceKeyAction);
     controller.AddInputActionForKey(LeftKeyAction);
     controller.AddInputActionForKey(RightKeyAction);
+    controller.AddInputActionForKey(UpKeyAction);
+    controller.AddInputActionForKey(DownKeyAction);
 }

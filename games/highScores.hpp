@@ -27,17 +27,25 @@ public:
     void Init(const std::string &pathToFile);
     void Update(uint32_t dt);
     bool CheckScore(int score);
+    void SetPreviousLetter();
+    void SetNextLetter();
+    void AcceptName(int score);
+    void MoveLeft();
+    void MoveRight();
+
     inline const std::vector<NameScore> &GetHighScores() { return mScores; }
     inline void SetScoreState(scoreState state) { mScoreState = state; }
     inline const scoreState GetScoreState() { return mScoreState; }
 
 private:
     void LoadScoreFile(const std::string &filePath);
+    void SaveScores();
     void AddScore(const NameScore &name);
     std::string mPathAndFileName;
     std::vector<NameScore> mScores;
     scoreState mScoreState;
-    int mCurrentScore = 0;
+    int mCurInitial = 0;
+    int mInitials[3] = {0};
 };
 
 #endif /* HIGHSCORES_H */

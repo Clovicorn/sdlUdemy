@@ -45,9 +45,9 @@ public:
     void Draw(Triangle &triangle, const Color &color, bool fill = false, const Color &fillColor = Color::White());
     void Draw(AARectangle &rect, const Color &color, bool fill = false, const Color &fillColor = Color::White());
     void Draw(Circle &circle, const Color &color, bool fill = false, const Color &fillColor = Color::White());
-    void Draw(BMPImage &image, Sprite &sprite, Vec2D &pos, const Color &overlayColor = Color::White(), float mag = 1.0f);
-    void Draw(SpriteSheet &ss, const std::string &spriteName, Vec2D &pos, const Color &overlayColor = Color::White(), float mag = 1.0f);
-    void Draw(BitmapFont &font, const std::string &text, Vec2D &pos, const Color &overlayColor = Color::White(), float mag = 1.0f);
+    void Draw(const BMPImage &image, const Sprite &sprite, const Vec2D &pos, const Color &overlayColor = Color::White());
+    void Draw(const SpriteSheet &ss, const std::string &spriteName, const Vec2D &pos, const Color &overlayColor = Color::White());
+    void Draw(const BitmapFont &font, const std::string &text, const Vec2D &pos, const Color &overlayColor = Color::White());
     void SetRenderColor(const Color &color);
 
 private:

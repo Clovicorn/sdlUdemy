@@ -1,0 +1,29 @@
+:name KLO
+:score 10000
+
+:name BCD
+:score 9000
+
+:name CDE
+:score 8000
+
+:name DEF
+:score 7000
+
+:name EFG
+:score 6000
+
+:name FGH
+:score 5000
+
+:name GHI
+:score 4000
+
+:name HIJ
+:score 3000
+
+:name IJK
+:score 2000
+
+:name JKL
+:score 1000

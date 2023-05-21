@@ -26,6 +26,8 @@ void ArcadeScene::Init()
                       { App::Singleton().PushScene(GetScene(TETRIS)); });
     SetButtonActions(actions);
     ButtonOptionScene::Init();
+
+    // TEMP
 }
 
 void ArcadeScene::Draw(Screen &theScreen)
@@ -35,6 +37,7 @@ void ArcadeScene::Draw(Screen &theScreen)
 
 void ArcadeScene::Update(uint32_t dt)
 {
+    ButtonOptionScene::Update(dt);
 }
 
 const std::string &ArcadeScene::GetSceneName()

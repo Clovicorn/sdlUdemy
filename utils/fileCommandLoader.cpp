@@ -77,6 +77,7 @@ bool FileCommandLoader::LoadFile(const std::string &filePath)
             }
         }
     }
+    inFile.close();
     return true;
 }
 
