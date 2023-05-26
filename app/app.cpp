@@ -13,7 +13,7 @@ App &App::Singleton()
 
 bool App::Init(uint32_t width, uint32_t height, uint32_t mag)
 {
-    if (!mFont.Load("ArcadeFont"))
+    if (!mFont.Load("Font/ArcadeFont"))
     {
         std::cout << "Failed to load font" << std::endl;
         return false;
