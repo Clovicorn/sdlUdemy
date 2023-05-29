@@ -5,6 +5,7 @@
 
 #include "../game.hpp"
 #include "../highScores.hpp"
+#include "../titleScreen.hpp"
 #include "../../shapes/aaRectangle.hpp"
 #include "../../graphics/bitmapFont.hpp"
 #include "tetrisBlock.hpp"
@@ -61,12 +62,11 @@ private:
 
     int mScore = 0;
 
-    std::string mHighScoresFile = "assets\\TetrisHighScores.txt";
-    int mTimeElapsed = 0;
-    bool mShowQuitMsg = false;
-    bool mMsgPaused = false;
-    int mShowMsgLoop = 0;
+    std::string mHighScoresFile = "assets/Tetris/TetrisHighScores.txt";
+    std::string mGameName = "Tetris";
+    TitleScreen mTitleScreen;
 
+    int mTimeElapsed = 0;
     int mSpeed = 0;
     int mSpeedUp = 60;
     int mMaxSpeed = 7;

@@ -1,3 +1,5 @@
+// TODO add titleScreen and update HighScore
+
 #ifndef BREAKOUT_H
 #define BREAKOUT_H
 
@@ -10,6 +12,7 @@
 #include "paddle.hpp"
 #include "breakOutLevel.hpp"
 #include "../highScores.hpp"
+#include "../titleScreen.hpp"
 #include "../../graphics/bitmapFont.hpp"
 
 class GameController;
@@ -41,7 +44,8 @@ private:
     void NextLevel();
     void CreateControls(GameController &controller);
 
-    std::string mHighScoreFile = "assets/BreakoutHighScores.txt";
+    std::string mHighScoreFile = "assets/BreakOut/BreakoutHighScores.txt";
+    std::string mGameName = "Breakout";
 
     const float INITIAL_BALL_SPEED = 100.0f;
     int mCleanup = 0;
@@ -61,6 +65,7 @@ private:
     BreakOutGameStates mGameState;
     BreakOutLevel &GetCurrentLevel() { return mLevels[mCurrentLevel]; }
     HighScores mHighScores;
+    TitleScreen mTitleScreen;
     LevelBoundary mLevelBoundary;
     std::vector<BreakOutLevel> mLevels;
     Paddle mPaddle;

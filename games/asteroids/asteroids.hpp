@@ -3,9 +3,27 @@
 
 #include <string>
 #include <vector>
+
+#include "ship.hpp"
+#include "rock.hpp"
+
 #include "../game.hpp"
+#include "../highScores.hpp"
+#include "../titleScreen.hpp"
+#include "../../graphics/spriteSheet.hpp"
+#include "../../graphics/animationPlayer.hpp"
+#include "../../graphics/bitmapFont.hpp"
 
 class Screen;
+
+enum AsteroidsState
+{
+    ASTEROIDS_TITLE = 0,
+    ASTEROIDS_SCORE,
+    ASTEROIDS_COUNTDOWN,
+    ASTEROIDS_PLAYING,
+    ASTEROIDS_GAMEOVER,
+};
 
 class Asteroids : public Game
 {
@@ -16,7 +34,23 @@ public:
     virtual std::string GetName() override;
 
 private:
+    void CreateControls(GameController &controller);
+
     std::string mGameName = "Asteroids";
+    std::string mHighScoresFile = "assets/Asteroids/AsteroidsHighScores.txt";
+    std::string mAnimationsFile = "assets/Asteroids/AsteroidsAnimations.txt";
+    std::string mSpriteSheetFile = "/Asteroids/AsteroidsSprites";
+
+    int mCountDown;
+
+    AsteroidsState mGameState;
+    AnimationPlayer mAnimationPlayer;
+    BitmapFont mFont;
+    TitleScreen mTitleScreen;
+    HighScores mHighScores;
+    SpriteSheet mSpriteSheet;
+    Ship mShip;
+    std::vector<Rock> mRocks;
 };
 
 #endif /* ASTEROIDS_ASTEROIDS_H */

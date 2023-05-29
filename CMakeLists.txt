@@ -13,6 +13,11 @@ app/app.cpp
 app/button.cpp
 
 games/highScores.cpp
+games/titleScreen.cpp
+
+games/asteroids/asteroids.cpp
+games/asteroids/rock.cpp
+games/asteroids/ship.cpp
 
 games/breakOut/ball.cpp
 games/breakOut/block.cpp

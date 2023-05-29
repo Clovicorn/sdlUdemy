@@ -3,6 +3,7 @@
 #include "notImplementedScene.hpp"
 #include "../app/app.hpp"
 #include "../utils/vec2d.hpp"
+#include "../games/asteroids/asteroids.hpp"
 #include "../games/breakOut/breakOut.hpp"
 #include "../games/tetris/tetris.hpp"
 #include "../graphics/bitmapFont.hpp"
@@ -65,6 +66,9 @@ std::unique_ptr<Scene> ArcadeScene::GetScene(eGame game)
     break;
     case (ASTEROIDS):
     {
+        std::unique_ptr<Asteroids> asteroids = std::make_unique<Asteroids>();
+        std::unique_ptr<GameScene> asteroidsGame = std::make_unique<GameScene>(std::move(asteroids));
+        return asteroidsGame;
     }
     break;
     case (PAC_MAN):

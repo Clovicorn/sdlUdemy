@@ -69,13 +69,27 @@ void HighScores::Draw(Screen &screen)
 void HighScores::Init(const std::string &pathToFile)
 {
     mScoreState = SCORE_SHOW;
+    mTimeElapsed = 0;
     mCurInitial = 0;
     mPathAndFileName = pathToFile;
     LoadScoreFile(pathToFile);
 }
 
-void HighScores::Update(uint32_t dt)
+bool HighScores::Update(uint32_t dt)
 {
+    if (mScoreState == SCORE_SHOW)
+    {
+        if (mTimeElapsed == 300)
+        {
+            mTimeElapsed = 0;
+            return false;
+        }
+        else
+        {
+            mTimeElapsed += 1;
+        }
+    }
+    return true;
 }
 
 bool HighScores::CheckScore(int score)

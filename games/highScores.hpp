@@ -25,7 +25,7 @@ public:
     ~HighScores();
     void Draw(Screen &screen);
     void Init(const std::string &pathToFile);
-    void Update(uint32_t dt);
+    bool Update(uint32_t dt);
     bool CheckScore(int score);
     void SetPreviousLetter();
     void SetNextLetter();
@@ -41,10 +41,11 @@ private:
     void LoadScoreFile(const std::string &filePath);
     void SaveScores();
     void AddScore(const NameScore &name);
+    int mTimeElapsed;
     std::string mPathAndFileName;
     std::vector<NameScore> mScores;
     scoreState mScoreState;
-    int mCurInitial = 0;
+    int mCurInitial;
     int mInitials[3] = {0};
 };
 

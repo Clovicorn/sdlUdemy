@@ -1,5 +1,5 @@
 #include "block.hpp"
-#include "breakout.hpp"
+#include "breakOut.hpp"
 #include <algorithm>
 #include "ball.hpp"
 #include "../../graphics/screen.hpp"
@@ -34,7 +34,6 @@ bool Block::ReduceHP()
         }
         if (mHP == 0)
         {
-            // TODO Call UpdateScore()
 
             return true;
         }

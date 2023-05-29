@@ -6,8 +6,7 @@
 #include <stdlib.h>
 #include "../../app/app.hpp"
 #include "../../input/gameController.hpp"
-// TODO Fix game over to allow adding score to high scores
-//  insteaad of going back to main screen.
+
 Tetris::~Tetris()
 {
     App::Singleton().SetRendererClearColor(Color::Black());
@@ -23,26 +22,7 @@ void Tetris::Draw(Screen &screen)
     }
     if (mGameState == TETRIS_TITLE)
     {
-        AARectangle rect(Vec2D::Zero, mScreenWidth, mScreenHeight / 2);
-        std::string breakoutText = "TETRIS";
-        Vec2D pos(mFont.GetDrawPosition(breakoutText, rect, BFXA_CENTER, BFYA_CENTER));
-        screen.Draw(mFont, breakoutText, pos, Color::Red());
-        if (!mMsgPaused)
-        {
-            AARectangle rect2(Vec2D(0, mScreenHeight / 2), mScreenWidth, mScreenHeight / 2);
-            if (mShowQuitMsg)
-            {
-                std::string quitText = "Press Escape to quit.";
-                Vec2D quitPos(mFont.GetDrawPosition(quitText, rect2, BFXA_CENTER, BFYA_CENTER));
-                screen.Draw(mFont, quitText, quitPos);
-            }
-            else
-            {
-                std::string spaceText = "Press Space to play.";
-                Vec2D playPos(mFont.GetDrawPosition(spaceText, rect2, BFXA_CENTER, BFYA_CENTER));
-                screen.Draw(mFont, spaceText, playPos);
-            }
-        }
+        mTitleScreen.Draw(screen);
     }
     if (mGameState == TETRIS_SCORES)
     {
@@ -85,9 +65,8 @@ void Tetris::Init(GameController &controller)
     mScreenHeight = App::Singleton().Height();
     mFont = App::Singleton().GetFont();
     mHighScores.Init(App::Singleton().GetBasePath() + mHighScoresFile);
-    Color renderColor(100, 100, 100, 255);
-    App::Singleton().SetRendererClearColor(renderColor);
     CreateControls(controller);
+    mTitleScreen.Init(mGameName);
 
     // border_width = 10
 
@@ -118,44 +97,18 @@ void Tetris::Update(uint32_t dt)
     }
     if (mGameState == TETRIS_TITLE)
     {
-        if (mTimeElapsed == 45 && !mMsgPaused)
+        bool showTitle = mTitleScreen.Update(dt);
+        if (!showTitle)
         {
-            mShowQuitMsg = !mShowQuitMsg;
-            mMsgPaused = true;
-            mTimeElapsed = 0;
-            if (mShowMsgLoop == 4)
-            {
-                mGameState = TETRIS_SCORES;
-                mShowMsgLoop = 0;
-            }
-            else
-            {
-                mShowMsgLoop++;
-            }
-        }
-        else if (mTimeElapsed == 20 && mMsgPaused)
-        {
-            mMsgPaused = false;
-            mTimeElapsed = 0;
-        }
-        else
-        {
-            mTimeElapsed += 1;
+            mGameState = TETRIS_SCORES;
         }
     }
     if (mGameState == TETRIS_SCORES)
     {
-        if (mHighScores.GetScoreState() == SCORE_SHOW)
+        bool showScores = mHighScores.Update(dt);
+        if (!showScores)
         {
-            if (mTimeElapsed == 300)
-            {
-                mGameState = TETRIS_TITLE;
-                mTimeElapsed = 0;
-            }
-            else
-            {
-                mTimeElapsed += 1;
-            }
+            mGameState = TETRIS_TITLE;
         }
     }
     if (mGameState == TETRIS_PLAYING)
@@ -272,8 +225,8 @@ void Tetris::UpdateScore(int amount)
 
 std::string Tetris::GetName()
 {
-    std::string name = "Tetris";
-    return name;
+
+    return mGameName;
 }
 
 void Tetris::CreateControls(GameController &controller)
@@ -587,6 +540,8 @@ void Tetris::StartGame()
 {
     if (mGameState == TETRIS_TITLE)
     {
+        Color renderColor(100, 100, 100, 255);
+        App::Singleton().SetRendererClearColor(renderColor);
         mGameState = TETRIS_PLAYING;
         mBlocks.clear();
         for (int i = 0; i < mPlayingWidthSquares; i++)

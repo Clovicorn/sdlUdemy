@@ -17,6 +17,7 @@ void BreakOut::Init(GameController &controller)
     mBall.SetRadius(3.0f);
     mBall.ResetScore();
     mHighScores.Init(App::GetBasePath() + mHighScoreFile);
+    mTitleScreen.Init(mGameName);
     controller.ClearAll();
     CreateControls(controller);
 }
@@ -83,47 +84,18 @@ void BreakOut::Update(uint32_t dt)
     }
     if (mGameState == IN_GAME_TITLE)
     {
-        if (mTimeElapsed == 45 && !mMsgPaused)
+        bool showTitle = mTitleScreen.Update(dt);
+        if (!showTitle)
         {
-            mShowQuitMsg = !mShowQuitMsg;
-            mMsgPaused = true;
-            mTimeElapsed = 0;
-            if (mShowMsgLoop == 4)
-            {
-                mGameState = IN_GAME_SCORES;
-                mShowMsgLoop = 0;
-            }
-            else
-            {
-                mShowMsgLoop++;
-            }
-        }
-        else if (mTimeElapsed == 20 && mMsgPaused)
-        {
-            mMsgPaused = false;
-            mTimeElapsed = 0;
-        }
-        else
-        {
-            mTimeElapsed += 1;
+            mGameState = IN_GAME_SCORES;
         }
     }
     if (mGameState == IN_GAME_SCORES)
     {
-        if (mHighScores.GetScoreState() == SCORE_SHOW)
+        bool showScores = mHighScores.Update(dt);
+        if (!showScores)
         {
-            if (mTimeElapsed == 300)
-            {
-                mGameState = IN_GAME_TITLE;
-                mTimeElapsed = 0;
-            }
-            else
-            {
-                mTimeElapsed += 1;
-            }
-        }
-        else
-        {
+            mGameState = IN_GAME_TITLE;
         }
     }
 }
@@ -155,26 +127,7 @@ void BreakOut::Draw(Screen &screen)
     }
     if (mGameState == IN_GAME_TITLE)
     {
-        AARectangle rect(Vec2D::Zero, mScreenWidth, mScreenHeight / 2);
-        std::string breakoutText = "BreakOut!";
-        Vec2D pos(mFont.GetDrawPosition(breakoutText, rect, BFXA_CENTER, BFYA_CENTER));
-        screen.Draw(mFont, breakoutText, pos, Color::Red());
-        if (!mMsgPaused)
-        {
-            AARectangle rect2(Vec2D(0, mScreenHeight / 2), mScreenWidth, mScreenHeight / 2);
-            if (mShowQuitMsg)
-            {
-                std::string quitText = "Press Escape to quit.";
-                Vec2D quitPos(mFont.GetDrawPosition(quitText, rect2, BFXA_CENTER, BFYA_CENTER));
-                screen.Draw(mFont, quitText, quitPos);
-            }
-            else
-            {
-                std::string spaceText = "Press Space to play.";
-                Vec2D playPos(mFont.GetDrawPosition(spaceText, rect2, BFXA_CENTER, BFYA_CENTER));
-                screen.Draw(mFont, spaceText, playPos);
-            }
-        }
+        mTitleScreen.Draw(screen);
     }
     if (mGameState == IN_GAME_SCORES)
     {
@@ -184,8 +137,8 @@ void BreakOut::Draw(Screen &screen)
 
 std::string BreakOut::GetName()
 {
-    std::string name = "Break Out";
-    return name;
+
+    return mGameName;
 }
 
 /**
@@ -200,7 +153,7 @@ void BreakOut::ResetGame()
         mLives = 3;
         mBall.ResetScore();
         mCurrentLevel = 0;
-        mLevels = BreakOutLevel::LoadLevelsFromFile(App::GetBasePath() + "assets/BreakoutLevels.txt", mScreenWidth, mScreenHeight);
+        mLevels = BreakOutLevel::LoadLevelsFromFile(App::GetBasePath() + "assets/BreakOut/BreakoutLevels.txt", mScreenWidth, mScreenHeight);
         mLevelBoundary = {AARectangle(Vec2D::Zero, mScreenWidth, mScreenHeight - 20)};
         AARectangle rect(Vec2D(mScreenWidth / 2 - Paddle::PADDLE_WIDTH / 2, mScreenHeight - 4 * Paddle::PADDLE_HEIGHT), Paddle::PADDLE_WIDTH, Paddle::PADDLE_HEIGHT);
         mLevels[mCurrentLevel].Init(mLevelBoundary.GetRectangle());
