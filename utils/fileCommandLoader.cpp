@@ -69,7 +69,7 @@ bool FileCommandLoader::LoadFile(const std::string &filePath)
                                 params.lineNum = lineNum;
                                 params.line = line;
                                 mCommands[index].parseFunc(params);
-                                lineNum++;
+                                ++lineNum;
                             }
                         }
                     }
@@ -102,10 +102,9 @@ Color FileCommandLoader::ReadColor(const ParseParams &params)
 Vec2D FileCommandLoader::ReadSize(const ParseParams &params)
 {
     size_t nextSpacePos = params.line.find_first_of(" ", params.delimitPos + 1);
-    int width = std::stoi(params.line.substr(params.delimitPos + 1, (nextSpacePos - params.delimitPos)));
-
+    int width = std::stoi(params.line.substr(params.delimitPos, nextSpacePos - params.delimitPos));
     size_t lastSpacePos = nextSpacePos;
-    nextSpacePos = params.line.find_first_of(" ", nextSpacePos + 1);
+    nextSpacePos = params.line.find_first_of(" ", lastSpacePos + 1);
     int height = std::stoi(params.line.substr(lastSpacePos + 1, nextSpacePos - lastSpacePos));
 
     return Vec2D(width, height);
