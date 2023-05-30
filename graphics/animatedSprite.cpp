@@ -20,7 +20,7 @@ void AnimatedSprite::Update(uint32_t dt)
     mAnimationPlayer.Update(dt);
 }
 
-void AnimatedSprite::Draw(Screen &screen)
+void AnimatedSprite::Draw(Screen &screen, const DrawTransform &transform)
 {
     AnimationFrame frame = mAnimationPlayer.GetCurrentAnimationFrame();
     Color frameColor = frame.frameColor;
@@ -28,10 +28,10 @@ void AnimatedSprite::Draw(Screen &screen)
     {
         frameColor = mColor;
     }
-    screen.Draw(*mpSpriteSheet, frame.frame, mPosition + frame.offset, frameColor);
+    screen.Draw(*mpSpriteSheet, frame.frame, mPosition + frame.offset, frameColor, transform);
     if (frame.overlay.size() > 0)
     {
-        screen.Draw(*mpSpriteSheet, frame.overlay, mPosition, frame.overlayColor);
+        screen.Draw(*mpSpriteSheet, frame.overlay, mPosition, frame.overlayColor, transform);
     }
 }
 
@@ -54,4 +54,9 @@ const AARectangle AnimatedSprite::GetBoundingBox() const
 {
     AARectangle bbox = {mPosition, static_cast<unsigned int>(Size().GetX()), static_cast<unsigned int>(Size().GetY())};
     return bbox;
+}
+
+const AnimationFrame &AnimatedSprite::GetCurrentFrame()
+{
+    return mAnimationPlayer.GetCurrentAnimationFrame();
 }

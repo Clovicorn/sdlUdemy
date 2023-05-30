@@ -11,10 +11,10 @@
 
 #include "color.hpp"
 #include "screenBuffer.hpp"
+#include "../utils/vec2d.hpp"
 
 class BMPImage;
 class BitmapFont;
-class Vec2D;
 class Line2D;
 class Triangle;
 class AARectangle;
@@ -25,6 +25,13 @@ struct Sprite;
 struct SDL_Renderer;
 struct SDL_PixelFormat;
 struct SDL_Texture;
+
+struct DrawTransform
+{
+    Vec2D point = Vec2D::Zero;
+    float angle = 0.0f;
+    float magnification = 1.0f;
+};
 
 class Screen
 {
@@ -45,9 +52,9 @@ public:
     void Draw(Triangle &triangle, const Color &color, bool fill = false, const Color &fillColor = Color::White());
     void Draw(AARectangle &rect, const Color &color, bool fill = false, const Color &fillColor = Color::White());
     void Draw(Circle &circle, const Color &color, bool fill = false, const Color &fillColor = Color::White());
-    void Draw(const BMPImage &image, const Sprite &sprite, const Vec2D &pos, const Color &overlayColor = Color::White());
-    void Draw(const SpriteSheet &ss, const std::string &spriteName, const Vec2D &pos, const Color &overlayColor = Color::White());
-    void Draw(const BitmapFont &font, const std::string &text, const Vec2D &pos, const Color &overlayColor = Color::White());
+    void Draw(const BMPImage &image, const Sprite &sprite, const Vec2D &pos, const Color &overlayColor = Color::White(), const DrawTransform &transform = DrawTransform());
+    void Draw(const SpriteSheet &ss, const std::string &spriteName, const Vec2D &pos, const Color &overlayColor = Color::White(), const DrawTransform &transform = DrawTransform());
+    void Draw(const BitmapFont &font, const std::string &text, const Vec2D &pos, const Color &overlayColor = Color::White(), const DrawTransform &transform = DrawTransform());
     void SetRenderColor(const Color &color);
 
 private:

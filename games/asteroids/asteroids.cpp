@@ -2,15 +2,27 @@
 
 #include "asteroids.hpp"
 #include "../../app/app.hpp"
+#include "../../shapes/aaRectangle.hpp"
+
+Asteroids::Asteroids() : mScreenWidth(0), mScreenHeight(0), mCountDown(3), mStartGame(false), mTimeElapsed(0)
+{
+}
 
 void Asteroids::Init(GameController &controller)
 {
+    mFont = App::Singleton().GetFont();
+
+    mScreenWidth = App::Singleton().Width();
+    mScreenHeight = App::Singleton().Height();
+
     mTitleScreen.Init(mGameName);
     mHighScores.Init(App::Singleton().GetBasePath() + mHighScoresFile);
+
     mSpriteSheet.Load(mSpriteSheetFile);
-    mAnimationPlayer.Init(App::Singleton().GetBasePath() + mAnimationsFile);
+
     CreateControls(controller);
-    std::cout << "end of Init" << std::endl;
+
+    mShip.Init(App::Singleton().GetBasePath() + mAnimationsFile, mSpriteSheet);
 }
 
 void Asteroids::Draw(Screen &screen)
@@ -25,9 +37,15 @@ void Asteroids::Draw(Screen &screen)
     }
     else if (mGameState == ASTEROIDS_COUNTDOWN)
     {
+        DrawTransform transform;
+        transform.magnification = 3.0f;
+        Color color = Color::White();
+        color.SetAlpha(255 - (mTimeElapsed * COUNTDOWN_FADE));
+        screen.Draw(mFont, to_string(mCountDown), mFont.GetDrawPosition(to_string(mCountDown), AARectangle(Vec2D::Zero, mScreenWidth, mScreenHeight), BFXA_CENTER, BFYA_CENTER), color, transform);
     }
     else if (mGameState == ASTEROIDS_PLAYING)
     {
+        mShip.Draw(screen);
     }
     else if (mGameState == ASTEROIDS_GAMEOVER)
     {
@@ -36,19 +54,34 @@ void Asteroids::Draw(Screen &screen)
 
 void Asteroids::Update(uint32_t dt)
 {
+
     if (mGameState == ASTEROIDS_TITLE)
     {
         bool showTitle = mTitleScreen.Update(dt);
         if (!showTitle)
         {
-            mGameState = ASTEROIDS_SCORE;
+            SwapState();
         }
     }
     else if (mGameState == ASTEROIDS_COUNTDOWN)
     {
+        if (mTimeElapsed > 60)
+        {
+            --mCountDown;
+            mTimeElapsed = 0;
+            if (mCountDown == 0)
+            {
+                SwapState();
+            }
+        }
+        else
+        {
+            ++mTimeElapsed;
+        }
     }
     else if (mGameState == ASTEROIDS_PLAYING)
     {
+        mShip.Update(dt);
     }
     else if (mGameState == ASTEROIDS_GAMEOVER)
     {
@@ -78,9 +111,9 @@ void Asteroids::CreateControls(GameController &controller)
     {
         if (GameController::IsPressed(state))
         {
-            if (mGameState == ASTEROIDS_TITLE)
+            if (mGameState == ASTEROIDS_PLAYING)
             {
-                App::Singleton().PopScene();
+                mShip.MoveForward();
             }
         }
     };
@@ -91,10 +124,6 @@ void Asteroids::CreateControls(GameController &controller)
     {
         if (GameController::IsPressed(state))
         {
-            if (mGameState == ASTEROIDS_TITLE)
-            {
-                App::Singleton().PopScene();
-            }
         }
     };
 
@@ -104,9 +133,9 @@ void Asteroids::CreateControls(GameController &controller)
     {
         if (GameController::IsPressed(state))
         {
-            if (mGameState == ASTEROIDS_TITLE)
+            if (mGameState == ASTEROIDS_PLAYING)
             {
-                App::Singleton().PopScene();
+                mShip.RotateLeft();
             }
         }
     };
@@ -117,9 +146,9 @@ void Asteroids::CreateControls(GameController &controller)
     {
         if (GameController::IsPressed(state))
         {
-            if (mGameState == ASTEROIDS_TITLE)
+            if (mGameState == ASTEROIDS_PLAYING)
             {
-                App::Singleton().PopScene();
+                mShip.RotateRight();
             }
         }
     };
@@ -132,8 +161,9 @@ void Asteroids::CreateControls(GameController &controller)
         {
             if (mGameState == ASTEROIDS_TITLE)
             {
-                mGameState = ASTEROIDS_COUNTDOWN;
+                mStartGame = true;
                 mCountDown = 3;
+                SwapState();
             }
             else if (mGameState == ASTEROIDS_PLAYING)
             {
@@ -153,7 +183,7 @@ void Asteroids::CreateControls(GameController &controller)
     {
         if (GameController::IsPressed(state))
         {
-            if (mGameState == ASTEROIDS_TITLE)
+            if (mGameState == ASTEROIDS_TITLE || (mGameState == ASTEROIDS_SCORE && mHighScores.GetScoreState() == SCORE_SHOW))
             {
                 App::Singleton().PopScene();
             }
@@ -166,4 +196,35 @@ void Asteroids::CreateControls(GameController &controller)
     controller.AddInputActionForKey(rightAction);
     controller.AddInputActionForKey(actionAction);
     controller.AddInputActionForKey(cancelAction);
+}
+
+void Asteroids::SwapState()
+{
+    if (mGameState == ASTEROIDS_TITLE && mStartGame)
+    {
+        mGameState = ASTEROIDS_COUNTDOWN;
+    }
+    else
+    {
+        if (mGameState == ASTEROIDS_TITLE)
+        {
+            mGameState = ASTEROIDS_SCORE;
+        }
+        else if (mGameState == ASTEROIDS_COUNTDOWN)
+        {
+            mGameState = ASTEROIDS_PLAYING;
+        }
+        else if (mGameState == ASTEROIDS_PLAYING)
+        {
+            mGameState = ASTEROIDS_GAMEOVER;
+        }
+        else if (mGameState == ASTEROIDS_GAMEOVER)
+        {
+            mGameState = ASTEROIDS_SCORE;
+        }
+        else if (mGameState == ASTEROIDS_SCORE)
+        {
+            mGameState = ASTEROIDS_TITLE;
+        }
+    }
 }

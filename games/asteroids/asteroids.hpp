@@ -28,6 +28,7 @@ enum AsteroidsState
 class Asteroids : public Game
 {
 public:
+    Asteroids();
     virtual void Init(GameController &controller) override;
     virtual void Update(uint32_t dt) override;
     virtual void Draw(Screen &screen) override;
@@ -35,14 +36,20 @@ public:
 
 private:
     void CreateControls(GameController &controller);
+    void SwapState();
 
     std::string mGameName = "Asteroids";
     std::string mHighScoresFile = "assets/Asteroids/AsteroidsHighScores.txt";
     std::string mAnimationsFile = "assets/Asteroids/test.txt";
     std::string mSpriteSheetFile = "/Asteroids/AsteroidsSprites";
 
+    const int COUNTDOWN_FADE = 4;
     int mCountDown;
+    int mTimeElapsed;
+    unsigned int mScreenWidth;
+    unsigned int mScreenHeight;
 
+    bool mStartGame;
     AsteroidsState mGameState;
     AnimationPlayer mAnimationPlayer;
     BitmapFont mFont;

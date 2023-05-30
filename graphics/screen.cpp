@@ -247,11 +247,7 @@ void Screen::Draw(Circle &circle, const Color &color, bool fill, const Color &fi
     std::vector<Vec2D> points;
     std::vector<Line2D> lines;
     unsigned int NUM_CIRCLE_SEGS = 30;
-    if (circle.GetRadius() < 10)
-    {
-        NUM_CIRCLE_SEGS = 16;
-    }
-    else if (circle.GetRadius() < 5)
+    if (circle.GetRadius() < 5)
     {
         NUM_CIRCLE_SEGS = 8;
     }
@@ -284,7 +280,7 @@ void Screen::Draw(Circle &circle, const Color &color, bool fill, const Color &fi
     }
 }
 
-void Screen::Draw(const BMPImage &image, const Sprite &sprite, const Vec2D &pos, const Color &overlayColor)
+void Screen::Draw(const BMPImage &image, const Sprite &sprite, const Vec2D &pos, const Color &overlayColor, const DrawTransform &transform)
 {
     uint32_t width = sprite.width;
     uint32_t height = sprite.height;
@@ -296,9 +292,9 @@ void Screen::Draw(const BMPImage &image, const Sprite &sprite, const Vec2D &pos,
 
     const std::vector<Color> &pixels = image.GetPixels();
     Vec2D topLeft = pos;
-    Vec2D topRight = pos + Vec2D(width, 0);
-    Vec2D bottomLeft = pos + Vec2D(0, height);
-    Vec2D bottomRight = pos + Vec2D(width, height);
+    Vec2D topRight = pos + Vec2D(width * transform.magnification, 0);
+    Vec2D bottomLeft = pos + Vec2D(0, height * transform.magnification);
+    Vec2D bottomRight = pos + Vec2D(width * transform.magnification, height * transform.magnification);
 
     std::vector<Vec2D> points = {topLeft, bottomLeft, bottomRight, topRight};
     Vec2D xAxis = topRight - topLeft;
@@ -329,13 +325,13 @@ void Screen::Draw(const BMPImage &image, const Sprite &sprite, const Vec2D &pos,
         return newPixelColor; });
 }
 
-void Screen::Draw(const SpriteSheet &ss, const std::string &spriteName, const Vec2D &pos, const Color &overlayColor)
+void Screen::Draw(const SpriteSheet &ss, const std::string &spriteName, const Vec2D &pos, const Color &overlayColor, const DrawTransform &transform)
 {
     const Sprite sprite = ss.GetSprite(spriteName);
-    Draw(ss.GetBMPImage(), sprite, pos, overlayColor);
+    Draw(ss.GetBMPImage(), sprite, pos, overlayColor, transform);
 }
 
-void Screen::Draw(const BitmapFont &font, const std::string &text, const Vec2D &pos, const Color &overlayColor)
+void Screen::Draw(const BitmapFont &font, const std::string &text, const Vec2D &pos, const Color &overlayColor, const DrawTransform &transform)
 {
     uint32_t xPos = pos.GetX();
     const SpriteSheet &ss = font.GetFontSheet();
@@ -349,7 +345,7 @@ void Screen::Draw(const BitmapFont &font, const std::string &text, const Vec2D &
         }
         Sprite sprite = ss.GetSprite(std::string("") + c);
         Vec2D newPos(xPos, pos.GetY());
-        Draw(ss.GetBMPImage(), sprite, newPos, overlayColor);
+        Draw(ss.GetBMPImage(), sprite, newPos, overlayColor, transform);
         xPos += sprite.width;
         xPos += font.GetFontSpacingBetweenLetters();
     }

@@ -72,9 +72,7 @@ std::vector<Animation> Animation::LoadAnimations(const std::string &filePath)
     fpsCommand.command = "fps";
     fpsCommand.parseFunc = [&](ParseParams params)
     {
-        std::cout << "trying to read fps" << std::endl;
         animations.back().SetFPS(FileCommandLoader::ReadInt(params));
-        std::cout << "fps read" << std::endl;
     };
 
     Command framesCommand;
