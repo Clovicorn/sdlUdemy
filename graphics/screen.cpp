@@ -296,33 +296,40 @@ void Screen::Draw(const BMPImage &image, const Sprite &sprite, const Vec2D &pos,
     Vec2D bottomLeft = pos + Vec2D(0, height * transform.magnification);
     Vec2D bottomRight = pos + Vec2D(width * transform.magnification, height * transform.magnification);
 
-    std::vector<Vec2D> points = {topLeft, bottomLeft, bottomRight, topRight};
+    if (transform.rotate)
+    {
+        topLeft.Rotate(transform.angle, transform.point);
+        topRight.Rotate(transform.angle, transform.point);
+        bottomLeft.Rotate(transform.angle, transform.point);
+        bottomRight.Rotate(transform.angle, transform.point);
+    }
+
+    std::vector<Vec2D>
+        points = {topLeft, bottomLeft, bottomRight, topRight};
     Vec2D xAxis = topRight - topLeft;
     Vec2D yAxis = bottomLeft - topLeft;
 
     const float invXAxisLenSq = 1.0f / xAxis.Mag2();
     const float invYAxisLenSq = 1.0f / yAxis.Mag2();
 
-    FillPoly(points, [&](uint32_t px, uint32_t py)
-             { Vec2D p(static_cast<float>(px), static_cast<float>(py));
-        Vec2D d = p - topLeft;
-        float u = invXAxisLenSq * d.Dot(xAxis);
-        float v = invYAxisLenSq * d.Dot(yAxis);
-        
-        u = Clamp(u, 0.0f, 1.0f);
-        v = Clamp(v, 0.0f, 1.0f);
+    FillPoly(
+        points, [&](uint32_t px, uint32_t py)
+        { 
+            Vec2D p(static_cast<float>(px), static_cast<float>(py));
+            Vec2D d = p - topLeft;
+            float u = invXAxisLenSq * d.Dot(xAxis);
+            float v = invYAxisLenSq * d.Dot(yAxis);
+            u = Clamp(u, 0.0f, 1.0f);
+            v = Clamp(v, 0.0f, 1.0f);
+            float tx = roundf(u * static_cast<float>(sprite.width));
+            float ty = roundf(v * static_cast<float>(sprite.height));
 
-        float tx = roundf(u * static_cast<float>(sprite.width));
-        float ty = roundf(v * static_cast<float>(sprite.height));
+            const Color pixelColor = image.GetPixels()[GetIndex(image.GetWidth(), ty + sprite.yPos, tx + sprite.xPos)];
 
-        // Testing alpha as 255^
-        // Still need to figure out why not working for colors
-        // works on white textBMP just not colored BMP
-        const Color pixelColor = image.GetPixels()[GetIndex(image.GetWidth(), ty + sprite.yPos, tx + sprite.xPos)];
+            Color newPixelColor = {static_cast<uint8_t>(pixelColor.GetRed() * rVal), static_cast<uint8_t>(pixelColor.GetGreen() * gVal), static_cast<uint8_t>(pixelColor.GetBlue() * bVal), static_cast<uint8_t>(pixelColor.GetAlpha() * aVal)};
 
-        Color newPixelColor = {static_cast<uint8_t>(pixelColor.GetRed() * rVal), static_cast<uint8_t>(pixelColor.GetGreen() * gVal), static_cast<uint8_t>(pixelColor.GetBlue() * bVal), static_cast<uint8_t>(pixelColor.GetAlpha() * aVal)};
-        
-        return newPixelColor; });
+            return newPixelColor; },
+        transform.wrapWorld);
 }
 
 void Screen::Draw(const SpriteSheet &ss, const std::string &spriteName, const Vec2D &pos, const Color &overlayColor, const DrawTransform &transform)
@@ -351,7 +358,7 @@ void Screen::Draw(const BitmapFont &font, const std::string &text, const Vec2D &
     }
 }
 
-void Screen::FillPoly(const std::vector<Vec2D> &points, FillPolyFunc func)
+void Screen::FillPoly(const std::vector<Vec2D> &points, FillPolyFunc func, bool wrap)
 {
     if (points.size() > 0)
     {
@@ -390,7 +397,6 @@ void Screen::FillPoly(const std::vector<Vec2D> &points, FillPolyFunc func)
                 float pointiY = points[i].GetY();
                 float pointjY = points[j].GetY();
 
-                // WTF??
                 if ((pointiY <= (float)pixelY && pointjY > (float)pixelY) || (pointjY <= pixelY && pointiY > pixelY))
                 {
                     float denom = pointjY - pointiY;

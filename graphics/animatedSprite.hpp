@@ -28,7 +28,6 @@ public:
     inline bool IsFinishedPlaying() { return mAnimationPlayer.IsFinishedPlaying(); }
     inline const Color &GetColor() const { return mColor; }
     const SpriteSheet *GetSpriteSheet() const { return mpSpriteSheet; }
-    const AnimationFrame &GetCurrentFrame();
 
 private:
     const SpriteSheet *mpSpriteSheet;

@@ -55,8 +55,3 @@ const AARectangle AnimatedSprite::GetBoundingBox() const
     AARectangle bbox = {mPosition, static_cast<unsigned int>(Size().GetX()), static_cast<unsigned int>(Size().GetY())};
     return bbox;
 }
-
-const AnimationFrame &AnimatedSprite::GetCurrentFrame()
-{
-    return mAnimationPlayer.GetCurrentAnimationFrame();
-}

@@ -31,6 +31,8 @@ struct DrawTransform
     Vec2D point = Vec2D::Zero;
     float angle = 0.0f;
     float magnification = 1.0f;
+    bool rotate = false;
+    bool wrapWorld = false;
 };
 
 class Screen
@@ -63,7 +65,7 @@ private:
     Screen &operator=(const Screen &screen);
 
     using FillPolyFunc = std::function<Color(uint32_t x, uint32_t y)>;
-    void FillPoly(const std::vector<Vec2D> &points, FillPolyFunc func);
+    void FillPoly(const std::vector<Vec2D> &points, FillPolyFunc func, bool wrap = false);
     void ClearScreen();
 
     float CreateOverlayValue(uint8_t val) { return (static_cast<float>(val) / 255.0f); }

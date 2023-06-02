@@ -16,12 +16,19 @@ public:
     void MoveForward();
     void RotateLeft();
     void RotateRight();
+    inline void SetShowThrusters(bool state) { mShowThrusters = state; }
 
 private:
-    const float mAngle = 0.174533f;
-    DrawTransform mTransform;
+    void WrapWorld();
+    bool mRotationChanged;
+    const float mAngle = 0.05235f;
+    Vec2D mCurSpeed;
+    const float mVelocity = 1.0f;
+    DrawTransform mShipTransform;
     SpriteSheet mSpriteSheet;
     AnimationPlayer mShipAnimPlayer;
+    bool mShowThrusters;
+    AnimationPlayer mThrusterAnimPlayer;
     Circle mCircle;
 };
 

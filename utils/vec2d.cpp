@@ -175,3 +175,27 @@ Vec2D Vec2D::RotateResult(float angle, const Vec2D &aroundPoint) const
     Vec2D rot(rotX, rotY);
     return rot + aroundPoint;
 }
+
+Vec2D Vec2D::GetGradient(const Vec2D &endPoint, float speed)
+{
+    float gradient = (mX - endPoint.GetX()) / (mY - endPoint.GetY());
+
+    if (gradient < 0)
+    {
+        gradient *= -1;
+    }
+
+    float ratioXY = speed / (1 + gradient);
+    float x = ratioXY * gradient;
+    float y = ratioXY;
+
+    return Vec2D(x, y);
+}
+
+Vec2D Vec2D::GetGradient(const Vec2D &startPoint, float angle, float length, float speed)
+{
+
+    float x2 = startPoint.GetX() + (length * std::cos(angle));
+    float y2 = startPoint.GetY() + (length * std::sin(angle));
+    return GetGradient(Vec2D(x2, y2), speed);
+}

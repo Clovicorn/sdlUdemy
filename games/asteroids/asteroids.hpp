@@ -40,7 +40,7 @@ private:
 
     std::string mGameName = "Asteroids";
     std::string mHighScoresFile = "assets/Asteroids/AsteroidsHighScores.txt";
-    std::string mAnimationsFile = "assets/Asteroids/test.txt";
+    std::string mAnimationsFile = "assets/Asteroids/AsteroidsAnimations.txt";
     std::string mSpriteSheetFile = "/Asteroids/AsteroidsSprites";
 
     const int COUNTDOWN_FADE = 4;

@@ -3,8 +3,11 @@
 #include <string>
 
 static const float EPSILON = 0.0001f;
+
 const float PI = 3.14159f;
+const float HALF_PI = PI / 2.0f;
 const float TWO_PI = 2.0f * PI;
+const float PI_3_4TH = PI + HALF_PI;
 
 bool IsEqual(float x, float y);
 

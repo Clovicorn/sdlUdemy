@@ -1,8 +1,10 @@
 #include "ship.hpp"
 #include "../../graphics/screen.hpp"
 #include "../../app/app.hpp"
+#include "../../utils/utils.hpp"
+#include <cmath>
 
-Ship::Ship()
+Ship::Ship() : mCurSpeed(Vec2D::Zero), mRotationChanged(false)
 {
 }
 
@@ -17,44 +19,140 @@ bool Ship::Init(const std::string &animationFilePath, const SpriteSheet &spriteS
     {
         return false;
     }
-    mShipAnimPlayer.Play("ship", false);
+    didLoad = mShipAnimPlayer.Play("ship", true);
+    if (!didLoad)
+    {
+        std::cout << "failed with thrusters animation" << std::endl;
+    }
+
+    didLoad = mThrusterAnimPlayer.Init(animationFilePath);
+    if (!didLoad)
+    {
+        return false;
+    }
+    didLoad = mThrusterAnimPlayer.Play("thrusters", true);
+    if (!didLoad)
+    {
+        std::cout << "failed with thrusters animation" << std::endl;
+    }
+    mShipTransform.rotate = true;
+    mShipTransform.wrapWorld = true;
     return true;
 }
 
 void Ship::Draw(Screen &screen)
 {
-    screen.Draw(mCircle, Color::Red(), false);
+
     Vec2D circleCenter = mCircle.GetCenterPoint();
 
-    AnimationFrame frame = mShipAnimPlayer.GetCurrentAnimationFrame();
-    Vec2D shipTopLeft = Vec2D(circleCenter.GetX() - frame.size.GetX() / 2, circleCenter.GetY() - frame.size.GetY() / 2);
-    screen.Draw(mSpriteSheet, frame.frame, shipTopLeft, Color::White(), mTransform);
+    AnimationFrame shipFrame = mShipAnimPlayer.GetCurrentAnimationFrame();
+    Vec2D shipTopLeft = Vec2D(circleCenter.GetX() - shipFrame.size.GetX() / 2, circleCenter.GetY() - shipFrame.size.GetY() / 2);
+
+    if (mShowThrusters)
+    {
+        Vec2D thrustersPos(shipTopLeft.GetX() + (shipFrame.size.GetX() / 4) + 1, circleCenter.GetY() + shipFrame.size.GetY() / 2);
+        AnimationFrame thrustersFrame = mThrusterAnimPlayer.GetCurrentAnimationFrame();
+        screen.Draw(mSpriteSheet, thrustersFrame.frame, thrustersPos, Color::White(), mShipTransform);
+    }
+    screen.Draw(mSpriteSheet, shipFrame.frame, shipTopLeft, Color::White(), mShipTransform);
 }
 
 void Ship::Update(uint32_t dt)
 {
-    mShipAnimPlayer.Update(dt);
-    mTransform.point = mCircle.GetCenterPoint();
+    mThrusterAnimPlayer.Update(dt);
+    mCircle.MoveBy(mCurSpeed);
+    mShipTransform.point = mCircle.GetCenterPoint();
+
+    WrapWorld();
 }
 
 void Ship::MoveForward()
 {
+    int x = 0;
+    int y = 0;
+    float angle = mShipTransform.angle - HALF_PI;
+    if (angle < 0)
+    {
+        angle = -(angle);
+    }
+    if (IsEqual(angle, 0) || IsEqual(angle, TWO_PI))
+    {
+        x = mVelocity;
+    }
+    else if (IsEqual(angle, HALF_PI))
+    {
+        y = -(mVelocity);
+    }
+    else if (IsEqual(angle, PI))
+    {
+        x = -(mVelocity);
+    }
+    else if (IsEqual(angle, PI_3_4TH))
+    {
+        y = mVelocity;
+    }
+    else if (angle > 0.0f && angle < HALF_PI)
+    {
+        x = mVelocity;
+        y = -(mVelocity);
+    }
+    else if (angle > HALF_PI && angle < PI)
+    {
+        x = -(mVelocity);
+        y = -(mVelocity);
+    }
+    else if (angle > PI && angle < PI_3_4TH)
+    {
+        x = -(mVelocity);
+        y = mVelocity;
+    }
+    else if (angle > PI_3_4TH && angle < TWO_PI)
+    {
+        x = mVelocity;
+        y = mVelocity;
+    }
+    mCurSpeed = Vec2D(x, y);
+    SetShowThrusters(true);
 }
 
 void Ship::RotateLeft()
 {
-    mTransform.angle += -(mAngle);
-    if (mTransform.angle <= 6.28319f)
+
+    mShipTransform.angle -= mAngle;
+    if (mShipTransform.angle < -(TWO_PI))
     {
-        mTransform.angle += 6.28319f;
+        mShipTransform.angle += TWO_PI;
     }
 }
 
 void Ship::RotateRight()
 {
-    mTransform.angle += mAngle;
-    if (mTransform.angle >= 6.28319f)
+    mShipTransform.angle += mAngle;
+    if (mShipTransform.angle > TWO_PI)
     {
-        mTransform.angle -= 6.28319f;
+        mShipTransform.angle -= TWO_PI;
+    }
+}
+
+void Ship::WrapWorld()
+{
+    if (mCircle.GetCenterPoint().GetX() < 0)
+    {
+        mCircle.MoveTo(Vec2D(App::Singleton().Width() + mCircle.GetCenterPoint().GetX(), mCircle.GetCenterPoint().GetY()));
+    }
+    else if (mCircle.GetCenterPoint().GetX() > App::Singleton().Width())
+    {
+        int x = mCircle.GetCenterPoint().GetX() - App::Singleton().Width();
+        mCircle.MoveTo(Vec2D(x, mCircle.GetCenterPoint().GetY()));
+    }
+
+    if (mCircle.GetCenterPoint().GetY() < 0)
+    {
+        mCircle.MoveTo(Vec2D(mCircle.GetCenterPoint().GetX(), App::Singleton().Height() + mCircle.GetCenterPoint().GetY()));
+    }
+    else if (mCircle.GetCenterPoint().GetY() > App::Singleton().Height())
+    {
+        int y = mCircle.GetCenterPoint().GetY() - App::Singleton().Height();
+        mCircle.MoveTo(Vec2D(mCircle.GetCenterPoint().GetX(), y));
     }
 }

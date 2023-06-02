@@ -50,6 +50,9 @@ public:
     void Rotate(float angle, const Vec2D &aroundPoint);
     Vec2D RotateResult(float angle, const Vec2D &aroundPoint) const;
 
+    Vec2D GetGradient(const Vec2D &endPoint, float speed);
+    Vec2D GetGradient(const Vec2D &startPoint, float angle, float length, float speed);
+
 private:
     float mX;
     float mY;

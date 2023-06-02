@@ -3,6 +3,8 @@
 #include "asteroids.hpp"
 #include "../../app/app.hpp"
 #include "../../shapes/aaRectangle.hpp"
+#include "../../shapes/line2D.hpp"
+#include <cmath>
 
 Asteroids::Asteroids() : mScreenWidth(0), mScreenHeight(0), mCountDown(3), mStartGame(false), mTimeElapsed(0)
 {
@@ -19,7 +21,7 @@ void Asteroids::Init(GameController &controller)
     mHighScores.Init(App::Singleton().GetBasePath() + mHighScoresFile);
 
     mSpriteSheet.Load(mSpriteSheetFile);
-
+    mGameState = ASTEROIDS_TITLE;
     CreateControls(controller);
 
     mShip.Init(App::Singleton().GetBasePath() + mAnimationsFile, mSpriteSheet);
@@ -114,6 +116,13 @@ void Asteroids::CreateControls(GameController &controller)
             if (mGameState == ASTEROIDS_PLAYING)
             {
                 mShip.MoveForward();
+            }
+        }
+        else
+        {
+            if (mGameState == ASTEROIDS_PLAYING)
+            {
+                mShip.SetShowThrusters(false);
             }
         }
     };
