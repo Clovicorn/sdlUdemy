@@ -17,9 +17,13 @@ public:
     void RotateLeft();
     void RotateRight();
     inline void SetShowThrusters(bool state) { mShowThrusters = state; }
+    inline const Circle &GetCircle() const { return mCircle; }
+    void ResetPosition();
 
 private:
     void WrapWorld();
+    Vec2D MoveFromNegAngle(float angle);
+    Vec2D MoveFromPosAngle(float angle);
     bool mRotationChanged;
     const float mAngle = 0.05235f;
     Vec2D mCurSpeed;

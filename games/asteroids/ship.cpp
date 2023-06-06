@@ -68,50 +68,20 @@ void Ship::Update(uint32_t dt)
 
 void Ship::MoveForward()
 {
-    int x = 0;
-    int y = 0;
+    // TODO Close but still not right because not not taking into account
+    // we might be facing down and not having fullly rotated around a circle
+
     float angle = mShipTransform.angle - HALF_PI;
+
     if (angle < 0)
     {
-        angle = -(angle);
+        mCurSpeed = MoveFromNegAngle(angle);
     }
-    if (IsEqual(angle, 0) || IsEqual(angle, TWO_PI))
+    else
     {
-        x = mVelocity;
+        mCurSpeed = MoveFromPosAngle(angle);
     }
-    else if (IsEqual(angle, HALF_PI))
-    {
-        y = -(mVelocity);
-    }
-    else if (IsEqual(angle, PI))
-    {
-        x = -(mVelocity);
-    }
-    else if (IsEqual(angle, PI_3_4TH))
-    {
-        y = mVelocity;
-    }
-    else if (angle > 0.0f && angle < HALF_PI)
-    {
-        x = mVelocity;
-        y = -(mVelocity);
-    }
-    else if (angle > HALF_PI && angle < PI)
-    {
-        x = -(mVelocity);
-        y = -(mVelocity);
-    }
-    else if (angle > PI && angle < PI_3_4TH)
-    {
-        x = -(mVelocity);
-        y = mVelocity;
-    }
-    else if (angle > PI_3_4TH && angle < TWO_PI)
-    {
-        x = mVelocity;
-        y = mVelocity;
-    }
-    mCurSpeed = Vec2D(x, y);
+
     SetShowThrusters(true);
 }
 
@@ -119,7 +89,7 @@ void Ship::RotateLeft()
 {
 
     mShipTransform.angle -= mAngle;
-    if (mShipTransform.angle < -(TWO_PI))
+    if (mShipTransform.angle <= -(TWO_PI) + HALF_PI)
     {
         mShipTransform.angle += TWO_PI;
     }
@@ -128,7 +98,7 @@ void Ship::RotateLeft()
 void Ship::RotateRight()
 {
     mShipTransform.angle += mAngle;
-    if (mShipTransform.angle > TWO_PI)
+    if (mShipTransform.angle >= TWO_PI - HALF_PI)
     {
         mShipTransform.angle -= TWO_PI;
     }
@@ -155,4 +125,97 @@ void Ship::WrapWorld()
         int y = mCircle.GetCenterPoint().GetY() - App::Singleton().Height();
         mCircle.MoveTo(Vec2D(mCircle.GetCenterPoint().GetX(), y));
     }
+}
+
+Vec2D Ship::MoveFromNegAngle(float angle)
+{
+    float x = 0;
+    float y = 0;
+    if (IsEqual(angle, -(0.0f)) || IsEqual(angle, -(TWO_PI)))
+    {
+        x = mVelocity;
+    }
+    else if (IsEqual(angle, -(HALF_PI)))
+    {
+        y = -(mVelocity);
+    }
+    else if (IsEqual(angle, -(PI)))
+    {
+        x = -(mVelocity);
+    }
+    else if (IsEqual(angle, -(PI_3_4TH)))
+    {
+        y = mVelocity;
+    }
+    else if ((angle < -(0.0f) && angle > -(HALF_PI)))
+    {
+        x = mVelocity;
+        y = -(mVelocity);
+    }
+    else if ((angle < -(HALF_PI) && angle > -(PI)))
+    {
+        x = -(mVelocity);
+        y = -(mVelocity);
+    }
+    else if (angle < -(PI) && angle > -(PI_3_4TH))
+    {
+        x = -(mVelocity);
+        y = mVelocity;
+    }
+    else if ((angle < -(PI_3_4TH) && angle > -(TWO_PI)))
+    {
+        x = mVelocity;
+        y = mVelocity;
+    }
+
+    return Vec2D(x, y);
+}
+
+Vec2D Ship::MoveFromPosAngle(float angle)
+{
+    float x = 0;
+    float y = 0;
+    if (IsEqual(angle, 0))
+    {
+        x = mVelocity;
+    }
+    else if (IsEqual(angle, HALF_PI))
+    {
+        y = mVelocity;
+    }
+    else if (IsEqual(angle, PI))
+    {
+        x = -(mVelocity);
+    }
+    else if (IsEqual(angle, PI_3_4TH))
+    {
+        y = -(mVelocity);
+    }
+    else if ((angle > 0.0f && angle < HALF_PI))
+    {
+        x = mVelocity;
+        y = mVelocity;
+    }
+    else if ((angle > HALF_PI && angle < PI))
+    {
+        x = -(mVelocity);
+        y = mVelocity;
+    }
+    else if ((angle > PI && angle < PI_3_4TH))
+    {
+        x = -(mVelocity);
+        y = -(mVelocity);
+    }
+    else if ((angle > PI_3_4TH && angle < TWO_PI))
+    {
+        x = mVelocity;
+        y = -(mVelocity);
+    }
+    return Vec2D(x, y);
+}
+
+void Ship::ResetPosition()
+{
+    mCircle.MoveTo(Vec2D(App::Singleton().Width() / 2.0f, App::Singleton().Height() / 2.0f));
+    mShipTransform.angle = 0.0f;
 }

@@ -37,6 +37,8 @@ public:
 private:
     void CreateControls(GameController &controller);
     void SwapState();
+    void ResetCurrentGame();
+    void LostLife();
 
     std::string mGameName = "Asteroids";
     std::string mHighScoresFile = "assets/Asteroids/AsteroidsHighScores.txt";
@@ -46,10 +48,15 @@ private:
     const int COUNTDOWN_FADE = 4;
     int mCountDown;
     int mTimeElapsed;
+    int mLives;
     unsigned int mScreenWidth;
     unsigned int mScreenHeight;
 
+    bool mShowShip;
+    bool mShowExplosion;
+    bool mExplosionShown;
     bool mStartGame;
+
     AsteroidsState mGameState;
     AnimationPlayer mAnimationPlayer;
     BitmapFont mFont;
